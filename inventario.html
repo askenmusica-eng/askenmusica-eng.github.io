@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Distribuidora Pehuén Inventario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@600;800&family=Red+Hat+Text:wght@400;500;600&family=Red+Hat+Mono:wght@500&display=swap">
+<style>
+/* Layout: control de bodega; cifras arriba, tabla de productos con nivel de stock, columna lateral con movimiento y reposición */
+:root{
+  --bg:#F2F4F7; --surface:#FFFFFF; --ink:#1A2230; --muted:#5D6778; --line:#D9DEE6;
+  --accent:#3B4FA8; --on-accent:#FFFFFF;
+  --ok:#2E7D4F; --ok-bg:#E3F2E8; --warn:#9A6400; --warn-bg:#FBF0D9; --bad:#B23A2E; --bad-bg:#F8E1DE;
+  --display:"Red Hat Display", "Segoe UI", sans-serif;
+  --body:"Red Hat Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"Red Hat Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141B; --surface:#181E28; --ink:#E4E8EF; --muted:#9AA3B2; --line:#2A3240;
+  --accent:#8C9DF0; --on-accent:#10141B;
+  --ok:#7ED39C; --ok-bg:#1E3326; --warn:#E8B85C; --warn-bg:#3A2F17; --bad:#F08B7F; --bad-bg:#3D2220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141B; --surface:#181E28; --ink:#E4E8EF; --muted:#9AA3B2; --line:#2A3240;
+  --accent:#8C9DF0; --on-accent:#10141B;
+  --ok:#7ED39C; --ok-bg:#1E3326; --warn:#E8B85C; --warn-bg:#3A2F17; --bad:#F08B7F; --bad-bg:#3D2220; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:1060px;margin:0 auto;padding-block:20px 40px}
+h1,h2{font-family:var(--display);margin:0;line-height:1.1}
+h1{font-size:1.7rem;font-weight:800}
+h2{font-size:1.05rem;font-weight:600;margin-bottom:10px}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px}
+.kpi b{display:block;font-family:var(--display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:.82rem}
+.kpi.alert b{color:var(--bad)}
+.grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+#q{flex:1;min-width:140px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right}
+.sku{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.lvl{display:flex;align-items:center;gap:8px;min-width:120px}
+.lvl .t{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden;position:relative}
+.lvl .t i{position:absolute;inset:0 auto 0 0;border-radius:3px}
+.lvl .t s{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.5}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:600}
+.ok{background:var(--ok-bg);color:var(--ok)} .warn{background:var(--warn-bg);color:var(--warn)} .bad{background:var(--bad-bg);color:var(--bad)}
+.side label{display:grid;gap:4px;font-size:.85rem;font-weight:500;margin-bottom:10px}
+.side input,.side select{width:100%}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:10px}
+.seg button{font:600 .88rem var(--body);padding:8px;border:0;background:var(--surface);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.primary{width:100%;font:600 .95rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:10px;cursor:pointer}
+.ghost{width:100%;font:600 .9rem var(--body);background:transparent;color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:9px;cursor:pointer;margin-top:8px}
+button:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.msg{font-size:.85rem;margin:8px 0 0;color:var(--muted)}
+.reorder{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.88rem}
+.reorder li{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:6px;font-variant-numeric:tabular-nums}
+.pedido{white-space:pre-wrap;font-family:var(--mono);font-size:.78rem;background:var(--bg);border:1px dashed var(--line);border-radius:6px;padding:10px;margin-top:8px;overflow-wrap:anywhere}
+.stack{display:grid;gap:14px}
+footer{margin-top:22px;color:var(--muted);font-size:.8rem}
+@media (max-width:880px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+</style>
+
+<div class="wrap">
+<h1>Distribuidora Pehuén</h1>
+<p class="sub">Control de inventario · Bodega Coronel</p>
+<div class="kpis">
+  <div class="kpi"><b id="k1"></b><span>Valor del inventario</span></div>
+  <div class="kpi"><b id="k2"></b><span>Productos activos</span></div>
+  <div class="kpi alert"><b id="k3"></b><span>Bajo el mínimo</span></div>
+  <div class="kpi alert"><b id="k4"></b><span>Sin stock</span></div>
+</div>
+<div class="grid">
+  <div class="box">
+    <div class="tools">
+      <input id="q" placeholder="Buscar producto o código">
+      <select id="cat"><option value="">Todas las categorías</option></select>
+      <select id="est"><option value="">Todos los estados</option><option value="bad">Sin stock</option><option value="warn">Bajo mínimo</option><option value="ok">Normal</option></select>
+    </div>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Categoría</th><th class="r">Stock</th><th>Nivel</th><th>Estado</th></tr></thead><tbody id="tb"></tbody></table></div>
+  </div>
+  <div class="stack">
+    <div class="box side">
+      <h2>Registrar movimiento</h2>
+      <div class="seg"><button id="mIn" aria-pressed="true">Entrada</button><button id="mOut" aria-pressed="false">Salida</button></div>
+      <label>Producto<select id="prod"></select></label>
+      <label>Cantidad<input id="cant" type="number" min="1" value="10"></label>
+      <button class="primary" id="mov">Registrar entrada</button>
+      <p class="msg" id="msg" role="status"></p>
+    </div>
+    <div class="box">
+      <h2>Por reponer</h2>
+      <ul class="reorder" id="re"></ul>
+      <button class="ghost" id="gen">Generar pedido al proveedor</button>
+      <div class="pedido" id="ped" hidden></div>
+    </div>
+  </div>
+</div>
+<footer>Distribuidora Pehuén es un negocio ficticio. Demo con datos de ejemplo · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+let P=[
+['AB-101','Arroz grado 1, 1 kg','Abarrotes',140,60,1190],['AB-102','Azúcar 1 kg','Abarrotes',38,50,1090],['AB-103','Aceite maravilla 1 L','Abarrotes',72,40,2390],
+['AB-104','Fideos spaghetti 400 g','Abarrotes',0,45,790],['AB-105','Harina sin polvos 1 kg','Abarrotes',95,40,1150],
+['BE-201','Bebida cola 3 L','Bebidas',24,36,2690],['BE-202','Agua mineral 1,6 L','Bebidas',150,48,690],['BE-203','Jugo néctar durazno 1,5 L','Bebidas',60,30,1390],
+['LI-301','Detergente líquido 3 L','Limpieza',9,20,6490],['LI-302','Cloro 2 L','Limpieza',55,24,1290],['LI-303','Papel higiénico 12 rollos','Limpieza',0,18,5990],
+['LA-401','Leche entera 1 L','Lácteos',88,60,1050],['LA-402','Mantequilla 250 g','Lácteos',17,25,2490]
+].map(([sku,n,c,s,min,costo])=>({sku,n,c,s,min,costo}));
+let modo='in';
+const clp=n=>'$'+Math.round(n).toLocaleString('es-CL');
+const estado=p=>p.s===0?['bad','Sin stock']:p.s<p.min?['warn','Bajo mínimo']:['ok','Normal'];
+const col={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--bad)'};
+[...new Set(P.map(p=>p.c))].forEach(c=>cat.insertAdjacentHTML('beforeend',`<option>${c}</option>`));
+function render(){
+  const q=document.getElementById('q').value.toLowerCase();
+  const rows=P.filter(p=>(p.n.toLowerCase().includes(q)||p.sku.toLowerCase().includes(q))&&(!cat.value||p.c===cat.value)&&(!est.value||estado(p)[0]===est.value))
+    .sort((a,b)=>a.s/a.min-b.s/b.min);
+  tb.innerHTML=rows.map(p=>{const[e,t]=estado(p);const cap=p.min*2.5;return `<tr><td>${p.n}<br><span class="sku">${p.sku}</span></td><td>${p.c}</td><td class="r">${p.s}</td>
+    <td><div class="lvl"><div class="t"><i style="width:${Math.min(100,p.s/cap*100)}%;background:${col[e]}"></i><s style="left:${p.min/cap*100}%"></s></div></div></td><td><span class="pill ${e}">${t}</span></td></tr>`}).join('')||'<tr><td colspan="5">Sin productos que coincidan.</td></tr>';
+  k1.textContent=clp(P.reduce((a,p)=>a+p.s*p.costo,0));k2.textContent=P.length;
+  k3.textContent=P.filter(p=>estado(p)[0]==='warn').length;k4.textContent=P.filter(p=>p.s===0).length;
+  const low=P.filter(p=>p.s<p.min);
+  re.innerHTML=low.map(p=>`<li><span>${p.n}</span><b>+${p.min*2-p.s} u.</b></li>`).join('')||'<li>Todo el stock está sobre el mínimo.</li>';
+  const v=prod.value;prod.innerHTML=P.map(p=>`<option value="${p.sku}">${p.n} (${p.s})</option>`).join('');if(v)prod.value=v;
+}
+function setModo(m){modo=m;mIn.setAttribute('aria-pressed',m==='in');mOut.setAttribute('aria-pressed',m==='out');mov.textContent=m==='in'?'Registrar entrada':'Registrar salida'}
+mIn.onclick=()=>setModo('in');mOut.onclick=()=>setModo('out');
+mov.onclick=()=>{const p=P.find(x=>x.sku===prod.value),c=parseInt(cant.value,10);
+  if(!c||c<1){msg.textContent='Indica una cantidad mayor a cero.';return}
+  if(modo==='out'&&c>p.s){msg.textContent=`No hay suficiente stock: quedan ${p.s} unidades de ${p.n}.`;return}
+  p.s+=modo==='in'?c:-c;const[e]=estado(p);
+  msg.textContent=`${modo==='in'?'Entrada':'Salida'} de ${c} u. registrada. ${p.n}: ${p.s} en bodega.${e!=='ok'?' Quedó bajo el mínimo.':''}`;render()};
+gen.onclick=()=>{const low=P.filter(p=>p.s<p.min);ped.hidden=false;
+  ped.textContent=low.length?`PEDIDO A PROVEEDOR\nDistribuidora Pehuén · ${new Date().toLocaleDateString('es-CL')}\n\n`+low.map(p=>`${p.sku}  ${p.n}  x ${p.min*2-p.s}`).join('\n')+`\n\nTotal estimado: ${clp(low.reduce((a,p)=>a+(p.min*2-p.s)*p.costo,0))}`:'No hay productos por reponer.'};
+['q','cat','est'].forEach(id=>document.getElementById(id).addEventListener('input',render));
+render();
+</script>
+
+</body>
+</html>

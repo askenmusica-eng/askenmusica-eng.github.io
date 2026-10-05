@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Gimnasio Andes Cobros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: panel de administración; resumen arriba, lista de socios con estado, panel de pago lateral que se apila en móvil */
+:root{
+  --bg:#F1F3F1; --surface:#FFFFFF; --ink:#172019; --muted:#5B655D; --line:#D7DDD8;
+  --accent:#2E6B3F; --on-accent:#FFFFFF;
+  --ok:#2E7D4F; --ok-bg:#E3F2E8; --warn:#9A6400; --warn-bg:#FBF0D9; --bad:#B23A2E; --bad-bg:#F8E1DE;
+  --display:"Barlow Condensed", "Arial Narrow", sans-serif;
+  --body:"Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111613; --surface:#1A201C; --ink:#E5EBE6; --muted:#98A39B; --line:#2A332D;
+  --accent:#6FBF85; --on-accent:#111613;
+  --ok:#7ED39C; --ok-bg:#1E3326; --warn:#E8B85C; --warn-bg:#3A2F17; --bad:#F08B7F; --bad-bg:#3D2220; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#1A201C; --ink:#E5EBE6; --muted:#98A39B; --line:#2A332D;
+  --accent:#6FBF85; --on-accent:#111613;
+  --ok:#7ED39C; --ok-bg:#1E3326; --warn:#E8B85C; --warn-bg:#3A2F17; --bad:#F08B7F; --bad-bg:#3D2220; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px}
+h1,h2{font-family:var(--display);font-weight:700;margin:0;letter-spacing:.01em;line-height:1.05}
+h1{font-size:2rem;text-transform:uppercase}
+h1 span{color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.sub{color:var(--muted);font-size:.9rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px}
+.kpi b{display:block;font-family:var(--display);font-size:1.9rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{color:var(--muted);font-size:.82rem}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.grid{display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font:500 .85rem var(--body);padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input,select{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink)}
+#q{flex:1;min-width:140px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+tr.sel td{background:var(--bg)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.78rem;font-weight:600}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+.act{font:600 .82rem var(--body);padding:5px 10px;border-radius:4px;border:1px solid var(--accent);color:var(--accent);background:transparent;cursor:pointer}
+button:focus-visible,.chip:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.side h2{font-size:1.3rem;margin-bottom:10px}
+.side label{display:grid;gap:4px;font-size:.85rem;font-weight:500;margin-bottom:10px}
+.side input,.side select{width:100%}
+.primary{width:100%;font:600 1rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:5px;padding:11px;cursor:pointer}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+.wa{margin-top:10px;background:var(--bg);border:1px dashed var(--line);border-radius:5px;padding:10px;font-size:.88rem;white-space:pre-wrap}
+.log{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:6px;font-size:.88rem;font-variant-numeric:tabular-nums}
+.log li{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding-top:6px}
+.log span{color:var(--muted)}
+.copy{margin-top:8px;font:600 .82rem var(--body);padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink);cursor:pointer}
+footer{margin-top:22px;color:var(--muted);font-size:.8rem}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+</style>
+
+<div class="wrap">
+<div class="top">
+  <div><h1>Gimnasio <span>Andes</span></h1><div class="sub">Cobro de mensualidades · <span id="mes"></span></div></div>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><b id="kRec">$0</b><span>Recaudado este mes</span><div class="bar"><i id="kBar"></i></div></div>
+  <div class="kpi"><b id="kPend">$0</b><span>Por cobrar</span></div>
+  <div class="kpi"><b id="kAtr">0</b><span>Socios atrasados</span></div>
+  <div class="kpi"><b id="kAct">0</b><span>Socios activos</span></div>
+</div>
+
+<div class="grid">
+  <div class="box">
+    <div class="tools">
+      <input id="q" placeholder="Buscar socio">
+      <button class="chip" data-f="todos" aria-pressed="true">Todos</button>
+      <button class="chip" data-f="bad" aria-pressed="false">Atrasados</button>
+      <button class="chip" data-f="warn" aria-pressed="false">Por vencer</button>
+      <button class="chip" data-f="ok" aria-pressed="false">Al día</button>
+    </div>
+    <div class="tw"><table><thead><tr><th>Socio</th><th>Plan</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody id="tb"></tbody></table></div>
+  </div>
+
+  <aside class="box side" id="side">
+    <h2>Registrar pago</h2>
+    <p class="empty" id="hint">Elige un socio de la lista para registrar su pago o enviarle un recordatorio.</p>
+    <div id="form" hidden>
+      <label>Socio<input id="fSocio" readonly></label>
+      <label>Monto<input id="fMonto" readonly></label>
+      <label>Medio de pago<select id="fMedio"><option>Transferencia</option><option>Débito</option><option>Crédito</option><option>Efectivo</option></select></label>
+      <button class="primary" id="pagar">Registrar pago</button>
+      <button class="copy" id="recordar" type="button">Crear recordatorio de WhatsApp</button>
+      <div class="wa" id="wa" hidden></div>
+    </div>
+    <ul class="log" id="log"></ul>
+  </aside>
+</div>
+<footer>Gimnasio Andes es un negocio ficticio. Demo con datos de ejemplo · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+const PLANES={'Mensual':25000,'Trimestral':65000,'Estudiante':18000};
+const N=['Camila Rojas','Javier Muñoz','Fernanda Soto','Diego Contreras','Valentina Pérez','Sebastián Díaz','Antonia Silva','Nicolás Morales','Catalina Fuentes','Matías Araya','Josefa Espinoza','Cristóbal Tapia','Isidora Reyes','Felipe Vargas'];
+const plans=['Mensual','Estudiante','Mensual','Trimestral','Mensual','Estudiante','Mensual'];
+const offs=[-9,4,12,-3,1,20,-15,6,2,25,-1,9,15,-6];
+const hoy=new Date();hoy.setHours(0,0,0,0);
+const add=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+let socios=N.map((n,i)=>({id:i,n,plan:plans[i%7],vence:add(hoy,offs[i])}));
+let pagos=[{n:'Antonia Silva',m:25000,med:'Transferencia',d:add(hoy,-1)},{n:'Felipe Vargas',m:25000,med:'Débito',d:add(hoy,-2)}];
+let recaudado=412000;const meta=650000;let filtro='todos',sel=null;
+const fmt=n=>'$'+n.toLocaleString('es-CL');
+const fd=d=>d.toLocaleDateString('es-CL',{day:'2-digit',month:'short'});
+mes.textContent=hoy.toLocaleDateString('es-CL',{month:'long',year:'numeric'});
+function estado(s){const d=Math.round((s.vence-hoy)/864e5);return d<0?['bad',`Atrasado ${-d} d`]:d<=5?['warn',d===0?'Vence hoy':`Vence en ${d} d`]:['ok','Al día']}
+function render(){
+  const q=document.getElementById('q').value.toLowerCase();
+  const rows=socios.filter(s=>s.n.toLowerCase().includes(q)&&(filtro==='todos'||estado(s)[0]===filtro)).sort((a,b)=>a.vence-b.vence);
+  tb.innerHTML=rows.map(s=>{const[e,t]=estado(s);return `<tr class="${sel===s.id?'sel':''}"><td>${s.n}</td><td>${s.plan}</td><td>${fd(s.vence)}</td><td><span class="pill ${e}">${t}</span></td><td><button class="act" data-id="${s.id}">${e==='ok'?'Ver':'Cobrar'}</button></td></tr>`}).join('')||'<tr><td colspan="5">Sin socios que coincidan.</td></tr>';
+  const atr=socios.filter(s=>estado(s)[0]==='bad');
+  kRec.textContent=fmt(recaudado);kBar.style.width=Math.min(100,recaudado/meta*100)+'%';
+  kPend.textContent=fmt(socios.filter(s=>estado(s)[0]!=='ok').reduce((a,s)=>a+PLANES[s.plan],0));
+  kAtr.textContent=atr.length;kAct.textContent=socios.length;
+  log.innerHTML='<li><b>Últimos pagos</b></li>'+pagos.slice(0,5).map(p=>`<li><div>${p.n}<br><span>${p.med} · ${fd(p.d)}</span></div><b>${fmt(p.m)}</b></li>`).join('');
+}
+tb.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)return;sel=+b.dataset.id;const s=socios[sel];
+  hint.hidden=true;form.hidden=false;fSocio.value=s.n;fMonto.value=fmt(PLANES[s.plan])+' · plan '+s.plan;wa.hidden=true;render()});
+pagar.onclick=()=>{const s=socios[sel];const dias=s.plan==='Trimestral'?90:30;const base=s.vence<hoy?hoy:s.vence;s.vence=add(base,dias);
+  recaudado+=PLANES[s.plan];pagos.unshift({n:s.n,m:PLANES[s.plan],med:fMedio.value,d:new Date()});
+  wa.hidden=false;wa.textContent=`Pago registrado. ${s.n} queda al día hasta el ${fd(s.vence)}.`;render()};
+recordar.onclick=()=>{const s=socios[sel];const[e,t]=estado(s);
+  wa.hidden=false;wa.textContent=`Hola ${s.n.split(' ')[0]}, te escribimos de Gimnasio Andes. Tu plan ${s.plan} (${fmt(PLANES[s.plan])}) ${e==='bad'?'venció el '+fd(s.vence):'vence el '+fd(s.vence)}. Puedes pagar por transferencia o en recepción. ¡Te esperamos!`;
+  try{navigator.clipboard.writeText(wa.textContent).then(()=>{recordar.textContent='Mensaje copiado';setTimeout(()=>recordar.textContent='Crear recordatorio de WhatsApp',1500)},()=>{})}catch(err){}};
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{filtro=c.dataset.f;document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===c));render()});
+document.getElementById('q').oninput=render;
+render();
+</script>
+
+</body>
+</html>

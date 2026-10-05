@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Barbería Nórdica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600&display=swap">
+<style>
+/* Layout: app de reservas en una columna; pasos de reserva arriba, panel del dueño en una segunda pestaña */
+:root{
+  --bg:#EEF0F2; --surface:#FFFFFF; --ink:#1B1F24; --muted:#5E6670;
+  --ox:#8E2C2C; --brass:#A87B2F; --line:#D5DAE0; --taken:#E3E6EA; --on-ox:#FFFFFF;
+  --display:"Anton", Impact, "Arial Narrow", sans-serif;
+  --body:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121417; --surface:#1B1E23; --ink:#E7EAEE; --muted:#9BA3AD;
+  --ox:#D0605A; --brass:#D4A757; --line:#2C3138; --taken:#24282E; --on-ox:#121417; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121417; --surface:#1B1E23; --ink:#E7EAEE; --muted:#9BA3AD;
+  --ox:#D0605A; --brass:#D4A757; --line:#2C3138; --taken:#24282E; --on-ox:#121417; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);padding-inline:16px}
+.wrap{max-width:760px;margin:0 auto;padding-block:20px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--ink);padding-bottom:12px}
+h1,h2{font-family:var(--display);font-weight:400;letter-spacing:.02em;text-transform:uppercase;margin:0;line-height:1}
+h1{font-size:clamp(2.2rem,8vw,3.4rem)}
+h1 span{color:var(--ox)}
+.sub{color:var(--muted);font-size:.9rem}
+.tabs{display:flex;gap:4px;margin-block:18px}
+.tab{font:600 .9rem var(--body);padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab:focus-visible,button:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;margin-bottom:12px}
+.step h2{font-size:1.25rem;margin-bottom:12px;display:flex;gap:10px;align-items:baseline}
+.step h2 small{font-family:var(--body);font-size:.8rem;color:var(--brass);letter-spacing:.08em}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.opt{text-align:left;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer}
+.opt b{display:block;font-weight:600}
+.opt span{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.opt[aria-pressed="true"]{border-color:var(--ox);box-shadow:inset 0 0 0 1px var(--ox)}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.day{flex:0 0 auto;font:inherit;padding:8px 12px;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer;text-align:center;min-width:64px}
+.day b{display:block;font-size:1.1rem;font-variant-numeric:tabular-nums}
+.day span{font-size:.75rem;color:var(--muted);text-transform:uppercase}
+.day[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.day[aria-pressed="true"] span{color:var(--bg)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+.slot{font:500 .95rem var(--body);padding:9px 0;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.slot:disabled{background:var(--taken);color:var(--muted);text-decoration:line-through;cursor:not-allowed;border-color:transparent}
+.slot[aria-pressed="true"]{background:var(--ox);color:var(--on-ox);border-color:var(--ox)}
+.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px}
+.summary p{margin:0;min-width:0}
+.cta{font:600 1rem var(--body);background:var(--ox);color:var(--on-ox);border:0;border-radius:4px;padding:12px 20px;cursor:pointer}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);width:100%}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:500}
+.msg{margin-top:12px;padding:12px 14px;border-left:4px solid var(--ox);background:var(--surface);border-radius:4px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:.92rem}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.tw{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px}
+.kpi b{display:block;font-family:var(--display);font-size:1.8rem;font-weight:400;font-variant-numeric:tabular-nums}
+.kpi span{font-size:.8rem;color:var(--muted)}
+.pill{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--taken)}
+.pill.new{background:var(--ox);color:var(--on-ox)}
+footer{margin-top:24px;color:var(--muted);font-size:.8rem}
+@media (max-width:520px){.fields,.kpis{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<header>
+  <div><h1>Barbería <span>Nórdica</span></h1><div class="sub">Talcahuano · Reserva tu hora en 30 segundos</div></div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="t-res" aria-selected="true">Reservar</button>
+  <button class="tab" role="tab" id="t-pan" aria-selected="false">Panel del dueño</button>
+</div>
+
+<main id="v-res">
+  <div class="step"><h2><small>PASO 1</small>Servicio</h2><div class="opts" id="servicios"></div></div>
+  <div class="step"><h2><small>PASO 2</small>Barbero</h2><div class="opts" id="barberos"></div></div>
+  <div class="step"><h2><small>PASO 3</small>Día y hora</h2><div class="days" id="dias"></div><div class="slots" id="horas"></div></div>
+  <div class="step"><h2><small>PASO 4</small>Tus datos</h2>
+    <div class="fields">
+      <label>Nombre<input id="nom" placeholder="Diego Fuentes"></label>
+      <label>WhatsApp<input id="tel" type="tel" placeholder="+56 9 1234 5678"></label>
+    </div>
+  </div>
+  <div class="summary"><p id="resumen">Elige servicio, barbero y hora.</p><button class="cta" id="confirmar" disabled>Confirmar reserva</button></div>
+  <div class="msg" id="ok" hidden role="status"></div>
+</main>
+
+<section id="v-pan" hidden>
+  <div class="kpis">
+    <div class="kpi"><b id="k1">0</b><span>Reservas de hoy</span></div>
+    <div class="kpi"><b id="k2">$0</b><span>Ingreso estimado hoy</span></div>
+    <div class="kpi"><b id="k3">0%</b><span>Ocupación de hoy</span></div>
+  </div>
+  <div class="step"><h2>Agenda</h2>
+    <div class="tw"><table><thead><tr><th>Hora</th><th>Cliente</th><th>Servicio</th><th>Barbero</th><th></th></tr></thead><tbody id="agenda"></tbody></table></div>
+  </div>
+</section>
+
+<footer>Barbería Nórdica es un negocio ficticio. Demo de sistema de reservas con datos de ejemplo · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+const SERV=[{n:'Corte clásico',p:9000,m:30},{n:'Corte + barba',p:14000,m:45},{n:'Perfilado de barba',p:7000,m:20},{n:'Corte niño',p:7000,m:30}];
+const BARB=[{n:'Felipe',e:'Fade y degradados'},{n:'Ignacio',e:'Barba y navaja'},{n:'Cualquiera',e:'Primera hora libre'}];
+const HORAS=['10:00','11:00','12:00','13:00','15:00','16:00','17:00','18:00','19:00'];
+const DN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const fmt=n=>'$'+n.toLocaleString('es-CL');
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dias=[];for(let d=new Date(),i=0;dias.length<6&&i<10;i++){const x=new Date(d);x.setDate(d.getDate()+i);if(x.getDay()!==0)dias.push(x)}
+const hoy=iso(dias[0]);
+const nombres=['Matías R.','Benjamín S.','Tomás C.','Vicente M.','Joaquín P.','Martín A.','Lucas G.','Agustín V.'];
+let reservas=[];let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+dias.forEach(d=>HORAS.forEach(h=>{if(rnd()<.4)reservas.push({dia:iso(d),hora:h,cli:nombres[Math.floor(rnd()*8)],serv:SERV[Math.floor(rnd()*4)],barb:BARB[Math.floor(rnd()*2)].n,ej:true})}));
+const st={serv:null,barb:null,dia:hoy,hora:null};
+function ocupado(dia,h,b){const r=reservas.filter(x=>x.dia===dia&&x.hora===h);if(b==='Cualquiera')return r.length>=2;return r.some(x=>x.barb===b)}
+function btns(el,arr,key,lab,sub){el.innerHTML='';arr.forEach((a,i)=>{const b=document.createElement('button');b.className='opt';b.type='button';b.setAttribute('aria-pressed',st[key]===i);b.innerHTML=`<b>${lab(a)}</b><span>${sub(a)}</span>`;b.onclick=()=>{st[key]=i;st.hora=null;render()};el.appendChild(b)})}
+function render(){
+  btns(servicios,SERV,'serv',a=>a.n,a=>fmt(a.p)+' · '+a.m+' min');
+  btns(barberos,BARB,'barb',a=>a.n,a=>a.e);
+  const D=document.getElementById('dias');D.innerHTML='';
+  dias.forEach(d=>{const b=document.createElement('button');b.className='day';b.type='button';b.setAttribute('aria-pressed',st.dia===iso(d));b.innerHTML=`<span>${iso(d)===hoy?'Hoy':DN[d.getDay()]}</span><b>${d.getDate()}</b>`;b.onclick=()=>{st.dia=iso(d);st.hora=null;render()};D.appendChild(b)});
+  const H=document.getElementById('horas');H.innerHTML='';
+  HORAS.forEach(h=>{const b=document.createElement('button');b.className='slot';b.type='button';b.textContent=h;const bn=st.barb==null?'Cualquiera':BARB[st.barb].n;b.disabled=ocupado(st.dia,h,bn);b.setAttribute('aria-pressed',st.hora===h);b.onclick=()=>{st.hora=h;render()};H.appendChild(b)});
+  const ok=st.serv!=null&&st.barb!=null&&st.hora;
+  resumen.textContent=ok?`${SERV[st.serv].n} con ${BARB[st.barb].n}, ${st.dia.split('-').reverse().slice(0,2).join('/')} a las ${st.hora} · ${fmt(SERV[st.serv].p)}`:'Elige servicio, barbero y hora.';
+  confirmar.disabled=!ok;
+  panel();
+}
+function panel(){
+  const r=reservas.filter(x=>x.dia===hoy).sort((a,b)=>a.hora.localeCompare(b.hora));
+  k1.textContent=r.length;k2.textContent=fmt(r.reduce((s,x)=>s+x.serv.p,0));k3.textContent=Math.round(r.length/(HORAS.length*2)*100)+'%';
+  agenda.innerHTML=r.map(x=>`<tr><td>${x.hora}</td><td>${x.cli}</td><td>${x.serv.n}</td><td>${x.barb}</td><td>${x.ej?'<span class="pill">Ejemplo</span>':'<span class="pill new">Nueva</span>'}</td></tr>`).join('')||'<tr><td colspan="5">Sin reservas para hoy.</td></tr>';
+}
+confirmar.onclick=()=>{
+  const n=nom.value.trim(),t=tel.value.trim(),m=document.getElementById('ok');m.hidden=false;
+  if(!n||!t){m.textContent='Escribe tu nombre y WhatsApp para confirmar.';return}
+  let b=BARB[st.barb].n;if(b==='Cualquiera')b=reservas.some(x=>x.dia===st.dia&&x.hora===st.hora&&x.barb==='Felipe')?'Ignacio':'Felipe';
+  reservas.push({dia:st.dia,hora:st.hora,cli:n,serv:SERV[st.serv],barb:b});
+  m.textContent=`Reserva confirmada, ${n}: ${SERV[st.serv].n} con ${b} a las ${st.hora}. Revisa el Panel del dueño para verla en la agenda.`;
+  st.hora=null;nom.value='';tel.value='';render();
+};
+function tab(p){document.getElementById('t-res').setAttribute('aria-selected',!p);document.getElementById('t-pan').setAttribute('aria-selected',p);document.getElementById('v-res').hidden=p;document.getElementById('v-pan').hidden=!p}
+document.getElementById('t-res').onclick=()=>tab(false);document.getElementById('t-pan').onclick=()=>tab(true);
+render();
+</script>
+
+</body>
+</html>

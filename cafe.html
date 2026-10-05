@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Café Ribera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: una sola columna editorial; hero con cartel de pizarra, carta en dos columnas, reserva al final */
+:root{
+  --bg:#F7F6F1; --surface:#ECEFE8; --ink:#231A15; --muted:#5F5A52;
+  --green:#2F5D50; --mustard:#C98F22; --line:#D6D9CF; --on-green:#F7F6F1;
+  --display:"Young Serif", Georgia, "Times New Roman", serif;
+  --body:"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#191714; --surface:#23211D; --ink:#EEE9E0; --muted:#A9A296;
+  --green:#7FB3A2; --mustard:#E2AE4C; --line:#36332D; --on-green:#191714; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#191714; --surface:#23211D; --ink:#EEE9E0; --muted:#A9A296;
+  --green:#7FB3A2; --mustard:#E2AE4C; --line:#36332D; --on-green:#191714; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-inline:20px}
+.wrap{max-width:980px;margin:0 auto}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;line-height:1.1}
+nav{display:flex;justify-content:space-between;align-items:center;padding-block:20px;gap:16px;flex-wrap:wrap}
+.logo{font-family:var(--display);font-size:1.4rem}
+.logo span{color:var(--mustard)}
+nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0;font-size:.95rem}
+nav a{text-decoration:none}
+nav a:hover,nav a:focus-visible{color:var(--green)}
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;padding-block:40px 56px}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;color:var(--green);font-weight:600}
+.hero h1{font-size:clamp(2.4rem,6vw,4rem);margin-block:12px 18px}
+.hero p{color:var(--muted);max-width:44ch;margin:0 0 24px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-block;padding:12px 22px;border-radius:999px;font-weight:600;text-decoration:none;border:2px solid var(--green);font:600 1rem var(--body);cursor:pointer}
+.btn.primary{background:var(--green);color:var(--on-green)}
+.btn.ghost{background:transparent;color:var(--green)}
+.btn:focus-visible{outline:3px solid var(--mustard);outline-offset:2px}
+.board{background:var(--green);color:var(--on-green);border-radius:6px;padding:28px 26px;transform:rotate(1.5deg);box-shadow:0 18px 40px -20px rgba(0,0,0,.45)}
+.board h2{font-size:1.6rem;margin-bottom:10px}
+.board dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 16px;font-variant-numeric:tabular-nums}
+.board dd{margin:0}
+.board small{display:block;margin-top:14px;opacity:.8}
+section{padding-block:48px;border-top:1px solid var(--line)}
+section h2{font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:8px}
+.lead{color:var(--muted);margin:0 0 28px;max-width:60ch}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.menu h3{font-size:1.25rem;margin-bottom:12px;color:var(--green)}
+.item{display:flex;align-items:baseline;gap:8px;padding-block:9px;border-bottom:1px dashed var(--line)}
+.item b{font-weight:500}
+.item i{flex:1;border-bottom:1px dotted var(--muted);opacity:.4;transform:translateY(-4px)}
+.item span{font-variant-numeric:tabular-nums}
+.item em{display:block;font-style:normal;color:var(--muted);font-size:.88rem}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.info div{background:var(--surface);border-radius:8px;padding:20px}
+.info h3{font-size:1.1rem;margin-bottom:6px}
+.info p{margin:0;color:var(--muted)}
+form{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:640px}
+label{display:grid;gap:6px;font-size:.9rem;font-weight:500}
+input,select{font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.full{grid-column:1/-1}
+.ok{background:var(--surface);border-left:4px solid var(--green);padding:14px 16px;border-radius:4px;max-width:640px;margin-top:16px}
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:720px){
+  .hero,.menu,.info{grid-template-columns:1fr}
+  .board{transform:none}
+  form{grid-template-columns:1fr}
+  nav ul{gap:14px}
+}
+</style>
+
+<div class="wrap">
+<nav>
+  <div class="logo">Café Ribera<span>.</span></div>
+  <ul><li><a href="#carta">Carta</a></li><li><a href="#visitanos">Visítanos</a></li><li><a href="#reservar">Reservar</a></li></ul>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Barrio Estación · Concepción</div>
+    <h1>Café de tueste propio, a pasos del Biobío</h1>
+    <p>Tostamos cada semana granos de Colombia y Perú y los servimos con kuchen casero, sándwiches de marraqueta y once para compartir.</p>
+    <div class="btns">
+      <a class="btn primary" href="#reservar">Reservar mesa</a>
+      <a class="btn ghost" href="#carta">Ver la carta</a>
+    </div>
+  </div>
+  <aside class="board" aria-label="Destacados de hoy">
+    <h2>Hoy en la pizarra</h2>
+    <dl>
+      <dt>Cortado</dt><dd>$2.400</dd>
+      <dt>Kuchen de murta</dt><dd>$3.200</dd>
+      <dt>Once para dos</dt><dd>$9.900</dd>
+    </dl>
+    <small>Once de lunes a viernes, de 17:00 a 19:30</small>
+  </aside>
+</header>
+
+<section id="carta">
+  <h2>Carta</h2>
+  <p class="lead">Precios con IVA incluido. Leche vegetal sin costo adicional.</p>
+  <div class="menu">
+    <div>
+      <h3>Café</h3>
+      <div class="item"><div><b>Espresso</b><em>Blend de la casa, 30 ml</em></div><i></i><span>$1.900</span></div>
+      <div class="item"><div><b>Cortado</b></div><i></i><span>$2.400</span></div>
+      <div class="item"><div><b>Cappuccino</b></div><i></i><span>$2.900</span></div>
+      <div class="item"><div><b>Filtrado V60</b><em>Origen de la semana</em></div><i></i><span>$3.300</span></div>
+      <div class="item"><div><b>Mocaccino</b></div><i></i><span>$3.200</span></div>
+    </div>
+    <div>
+      <h3>Para acompañar</h3>
+      <div class="item"><div><b>Kuchen de murta</b><em>Receta de familia</em></div><i></i><span>$3.200</span></div>
+      <div class="item"><div><b>Pie de limón</b></div><i></i><span>$2.900</span></div>
+      <div class="item"><div><b>Barros Luco</b><em>En marraqueta</em></div><i></i><span>$5.900</span></div>
+      <div class="item"><div><b>Tostadas con palta</b></div><i></i><span>$3.500</span></div>
+      <div class="item"><div><b>Once para dos</b><em>2 bebidas, sándwich y dulce</em></div><i></i><span>$9.900</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="visitanos">
+  <h2>Visítanos</h2>
+  <p class="lead">Mesas adentro y en la terraza. Wifi gratis y enchufes en la barra.</p>
+  <div class="info">
+    <div><h3>Horario</h3><p>Lun a vie: 8:00 a 20:00<br>Sáb: 9:30 a 20:00<br>Dom: cerrado</p></div>
+    <div><h3>Dónde</h3><p>Barrio Estación, Concepción<br>A dos cuadras del Biotren</p></div>
+    <div><h3>Pagos</h3><p>Débito, crédito, efectivo y transferencia</p></div>
+  </div>
+</section>
+
+<section id="reservar">
+  <h2>Reservar mesa</h2>
+  <p class="lead">Para grupos de hasta 8 personas. Te confirmamos por WhatsApp.</p>
+  <form id="f" novalidate>
+    <label>Nombre<input id="nombre" required placeholder="Camila Soto"></label>
+    <label>WhatsApp<input id="fono" type="tel" required placeholder="+56 9 1234 5678"></label>
+    <label>Fecha<input id="fecha" type="date" required></label>
+    <label>Hora<select id="hora"><option>09:30</option><option>11:00</option><option>13:00</option><option selected>17:00</option><option>18:30</option></select></label>
+    <label class="full">Personas<select id="personas"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5 a 8</option></select></label>
+    <div class="full"><button class="btn primary" type="submit">Enviar solicitud</button></div>
+  </form>
+  <div id="ok" class="ok" hidden role="status"></div>
+</section>
+
+<footer>
+  <span>Café Ribera es un negocio ficticio, creado como proyecto de muestra.</span>
+  <span>Diseño y desarrollo: <a href="index.html">Max · Concepción</a></span>
+</footer>
+</div>
+
+<script>
+const f=document.getElementById('f'),ok=document.getElementById('ok');
+const d=document.getElementById('fecha');d.min=new Date().toISOString().slice(0,10);
+f.addEventListener('submit',e=>{
+  e.preventDefault();
+  const n=document.getElementById('nombre').value.trim(),t=document.getElementById('fono').value.trim();
+  if(!n||!t||!d.value){ok.hidden=false;ok.textContent='Completa nombre, WhatsApp y fecha para enviar la solicitud.';return}
+  ok.hidden=false;
+  ok.textContent=`Listo, ${n}. Recibimos tu solicitud para el ${d.value.split('-').reverse().join('/')} a las ${document.getElementById('hora').value}. (Demo: en un sitio real esto llegaría al local.)`;
+  f.reset();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Lanas del Sur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Karla:wght@400;500;700&display=swap">
+<style>
+/* Layout: tienda en dos columnas; catálogo en grilla y carrito fijo a la derecha, que baja al final en móvil */
+:root{
+  --bg:#F5F4F1; --surface:#FFFFFF; --ink:#262421; --muted:#6B665E; --line:#E0DDD6;
+  --accent:#5B3E8A; --on-accent:#FFFFFF; --soft:#EEE9F5; --ok:#2E7D4F;
+  --display:"Bitter", Georgia, serif;
+  --body:"Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#151413; --surface:#1E1C1A; --ink:#ECE9E4; --muted:#A39E95; --line:#33302C;
+  --accent:#B99CE6; --on-accent:#151413; --soft:#2A2433; --ok:#7ED39C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#151413; --surface:#1E1C1A; --ink:#ECE9E4; --muted:#A39E95; --line:#33302C;
+  --accent:#B99CE6; --on-accent:#151413; --soft:#2A2433; --ok:#7ED39C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 40px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font-size:1.9rem;font-weight:700}
+.sub{color:var(--muted);margin:0 0 18px}
+.banner{background:var(--soft);border-radius:8px;padding:10px 14px;font-size:.9rem;margin-bottom:16px}
+.cats{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip{font:500 .88rem var(--body);padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.layout{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;min-width:0}
+.prod{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
+.sw{aspect-ratio:4/3;max-width:100%;position:relative}
+.sw::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.18) 0 6px,transparent 6px 12px)}
+.prod .t{padding:12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.prod h3{font-size:1rem;font-weight:500}
+.prod p{margin:0;color:var(--muted);font-size:.85rem;flex:1}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.price{font-weight:700;font-variant-numeric:tabular-nums}
+.add{font:700 .85rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:7px 12px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+.cart{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;position:sticky;top:calc(env(safe-area-inset-top, 0px) + 12px)}
+.cart h2{font-size:1.2rem;margin-bottom:10px}
+.items{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:8px}
+.items li{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:.9rem;border-bottom:1px solid var(--line);padding-bottom:8px}
+.qty{display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums}
+.qty button{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font:700 .9rem var(--body)}
+.empty{color:var(--muted);font-size:.9rem}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:500;margin-bottom:10px}
+input,select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:100%}
+.sum{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:.92rem;font-variant-numeric:tabular-nums;margin-bottom:12px}
+.sum .tot{font-weight:700;font-size:1.05rem;border-top:1px solid var(--line);padding-top:6px}
+.pay{display:grid;gap:6px;margin-bottom:12px}
+.pay label{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:8px 10px;margin:0;cursor:pointer;font-weight:500}
+.pay input{width:auto}
+.pay label:has(input:checked){border-color:var(--accent);background:var(--soft)}
+.buy{width:100%;font:700 1rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:12px;cursor:pointer}
+.buy:disabled{opacity:.45;cursor:not-allowed}
+.msg{margin-top:10px;font-size:.88rem}
+.msg.ok{background:var(--soft);border-radius:6px;padding:10px}
+footer{margin-top:22px;color:var(--muted);font-size:.8rem}
+@media (max-width:820px){.layout{grid-template-columns:1fr}.cart{position:static}}
+</style>
+
+<div class="wrap">
+<header><h1>Lanas del Sur</h1><span class="sub" style="margin:0">Hilados naturales teñidos a mano</span></header>
+<p class="sub">Lana de oveja y alpaca desde Chiloé. Despacho a todo Chile.</p>
+<div class="banner">Envío gratis en compras sobre $40.000 a Concepción y Talcahuano.</div>
+<div class="cats" id="cats"></div>
+<div class="layout">
+  <div class="grid" id="grid"></div>
+  <aside class="cart">
+    <h2>Tu carrito</h2>
+    <ul class="items" id="items"></ul>
+    <label>Comuna de despacho<select id="comuna">
+      <option value="3500">Concepción</option><option value="3500">San Pedro de la Paz</option><option value="4000">Talcahuano</option><option value="4500">Chiguayante</option><option value="6990">Resto de Chile (Starken)</option><option value="0">Retiro en taller, Concepción</option>
+    </select></label>
+    <div class="sum" id="sum"></div>
+    <label>Nombre<input id="nom" placeholder="Paula Herrera"></label>
+    <label>Dirección<input id="dir" placeholder="Calle y número, depto"></label>
+    <div class="pay"><label><input type="radio" name="pago" value="Transferencia" checked>Transferencia bancaria</label><label><input type="radio" name="pago" value="Webpay">Webpay (débito o crédito)</label></div>
+    <button class="buy" id="buy" disabled>Confirmar pedido</button>
+    <div class="msg" id="msg" role="status"></div>
+  </aside>
+</div>
+<footer>Lanas del Sur es una tienda ficticia. Demo de comercio electrónico: no se cobra nada · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+const PR=[
+{id:1,n:'Lana merino calipso',c:'Ovillos',d:'100 g · grosor medio',p:6900,col:['#4BA3A8','#2F7F86']},
+{id:2,n:'Alpaca natural gris',c:'Ovillos',d:'100 g · suave y liviana',p:8900,col:['#9A9590','#7A756F']},
+{id:3,n:'Lana chilota cruda',c:'Ovillos',d:'200 g · hilado grueso',p:7500,col:['#D9CBB2','#C2B08F']},
+{id:4,n:'Pack arcoíris',c:'Packs',d:'6 ovillos de 50 g',p:19900,col:['#C8553D','#F2A541','#3E7CB1','#6A994E']},
+{id:5,n:'Kit gorro para principiantes',c:'Kits',d:'Lana, palillos y patrón',p:16900,col:['#8E2C5B','#B04A7A']},
+{id:6,n:'Palillos de bambú 5 mm',c:'Accesorios',d:'Par de 35 cm',p:3900,col:['#C9A66B','#A8854B']},
+{id:7,n:'Lana merino musgo',c:'Ovillos',d:'100 g · grosor medio',p:6900,col:['#5E7A3A','#46602A']},
+{id:8,n:'Kit bufanda trenzada',c:'Kits',d:'3 ovillos y patrón ilustrado',p:22900,col:['#3D4F7A','#55689A']}];
+let cart={},catSel='Todo';
+const clp=n=>'$'+n.toLocaleString('es-CL');
+['Todo',...new Set(PR.map(p=>p.c))].forEach(c=>{const b=document.createElement('button');b.className='chip';b.textContent=c;b.onclick=()=>{catSel=c;renderGrid()};cats.appendChild(b)});
+function renderGrid(){
+  document.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',b.textContent===catSel));
+  grid.innerHTML=PR.filter(p=>catSel==='Todo'||p.c===catSel).map(p=>`<article class="prod"><div class="sw" style="background:linear-gradient(135deg,${p.col.join(',')})"></div>
+  <div class="t"><h3>${p.n}</h3><p>${p.d}</p><div class="row"><span class="price">${clp(p.p)}</span><button class="add" data-id="${p.id}">Agregar</button></div></div></article>`).join('')}
+grid.addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)return;cart[b.dataset.id]=(cart[b.dataset.id]||0)+1;b.textContent='Agregado';setTimeout(()=>b.textContent='Agregar',900);msg.textContent='';msg.className='msg';renderCart()});
+function renderCart(){
+  const ids=Object.keys(cart).filter(k=>cart[k]>0);
+  items.innerHTML=ids.map(k=>{const p=PR.find(x=>x.id==k);return `<li><span>${p.n}</span><b>${clp(p.p*cart[k])}</b><div class="qty"><button data-q="${k}" data-d="-1" aria-label="Quitar uno">−</button>${cart[k]}<button data-q="${k}" data-d="1" aria-label="Agregar uno">+</button></div></li>`}).join('')||'<li class="empty">Aún no agregas productos.</li>';
+  const sub=ids.reduce((a,k)=>a+PR.find(x=>x.id==k).p*cart[k],0);
+  let env=+comuna.value;const local=comuna.selectedIndex<=3;if(local&&sub>=40000)env=0;
+  sum.innerHTML=`<span>Subtotal</span><span>${clp(sub)}</span><span>Despacho</span><span>${ids.length?(env?clp(env):'Gratis'):'—'}</span>`+
+    (local&&sub>0&&sub<40000?`<span style="grid-column:1/-1;color:var(--muted);font-size:.82rem">Te faltan ${clp(40000-sub)} para envío gratis.</span>`:'')+
+    `<span class="tot">Total</span><span class="tot">${clp(sub+(ids.length?env:0))}</span>`;
+  buy.disabled=!ids.length;
+}
+items.addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;cart[b.dataset.q]=Math.max(0,cart[b.dataset.q]+(+b.dataset.d));renderCart()});
+comuna.onchange=renderCart;
+buy.onclick=()=>{const n=nom.value.trim(),d=dir.value.trim();
+  if(!n||(comuna.value!=='0'&&!d)){msg.className='msg';msg.textContent='Completa tu nombre y dirección para confirmar.';return}
+  const pago=document.querySelector('[name=pago]:checked').value,num='LS-'+(1000+Math.floor(Math.random()*9000));
+  msg.className='msg ok';msg.textContent=pago==='Transferencia'?`Pedido ${num} recibido, ${n}. Te enviamos los datos de transferencia por correo; despachamos al confirmar el pago.`:`Pedido ${num} recibido, ${n}. En la tienda real aquí se abriría Webpay para pagar.`;
+  cart={};renderCart()};
+renderGrid();renderCart();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Picada Don Lucho Pedidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Rubik:wght@400;500;600&display=swap">
+<style>
+/* Layout: tres vistas en pestañas (garzón, cocina, caja); cocina como tablero de columnas por estado */
+:root{
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#2B2118; --muted:#6F6458; --line:#E3DBCD;
+  --accent:#C0392B; --on-accent:#FFFFFF; --mustard:#D4A017; --ok:#2E7D4F; --soft:#FBEDE9;
+  --display:"Alfa Slab One", Rockwell, Georgia, serif;
+  --body:"Rubik", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17130F; --surface:#211C17; --ink:#EFE8DD; --muted:#A99D8E; --line:#3A3129;
+  --accent:#EE7A6B; --on-accent:#17130F; --mustard:#E9C04F; --ok:#7ED39C; --soft:#3A2420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17130F; --surface:#211C17; --ink:#EFE8DD; --muted:#A99D8E; --line:#3A3129;
+  --accent:#EE7A6B; --on-accent:#17130F; --mustard:#E9C04F; --ok:#7ED39C; --soft:#3A2420; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:1040px;margin:0 auto;padding-block:20px 40px}
+h1,h2{margin:0;line-height:1.15}
+h1{font-family:var(--display);font-weight:400;font-size:1.9rem}
+h1 span{color:var(--accent)}
+h2{font-size:1.05rem;font-weight:600;margin-bottom:10px}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:14px}
+.tabs{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.tab{font:600 .9rem var(--body);padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab b{display:inline-block;min-width:20px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:.75rem}
+button:focus-visible{outline:3px solid var(--mustard);outline-offset:2px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;min-width:0}
+.mesero{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+.mesas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.mesa{font:600 1rem var(--body);padding:12px 0;border-radius:8px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.mesa.busy{border-color:var(--mustard)}
+.mesa[aria-pressed="true"]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.plato{text-align:left;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);cursor:pointer}
+.plato b{display:block;font-weight:600}
+.plato span{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.lines{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px;font-size:.92rem}
+.lines li{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--line);padding-bottom:6px;font-variant-numeric:tabular-nums}
+.lines button{border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit}
+input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:100%;margin-bottom:10px}
+.primary{width:100%;font:600 1rem var(--body);background:var(--accent);color:var(--on-accent);border:0;border-radius:6px;padding:11px;cursor:pointer}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.msg{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.col{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+.col h2{display:flex;justify-content:space-between;align-items:center}
+.col h2 span{font-size:.8rem;color:var(--muted);font-weight:500}
+.ticket{background:var(--bg);border:1px solid var(--line);border-left:4px solid var(--mustard);border-radius:6px;padding:10px;margin-bottom:8px}
+.ticket.prep{border-left-color:var(--accent)} .ticket.done{border-left-color:var(--ok)}
+.ticket header{display:flex;justify-content:space-between;font-weight:600;margin-bottom:4px}
+.ticket header span{color:var(--muted);font-weight:400;font-size:.82rem;font-variant-numeric:tabular-nums}
+.ticket ul{margin:0 0 6px;padding-left:18px;font-size:.9rem}
+.ticket em{display:block;font-size:.82rem;color:var(--accent);font-style:normal;margin-bottom:6px}
+.adv{font:600 .82rem var(--body);padding:6px 10px;border-radius:5px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.caja{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cuenta .sum{display:grid;grid-template-columns:1fr auto;gap:3px;font-size:.9rem;font-variant-numeric:tabular-nums;margin:8px 0 10px}
+.cuenta .tot{font-weight:700;border-top:1px solid var(--line);padding-top:5px}
+.empty{color:var(--muted);font-size:.9rem;margin:0}
+.kpis{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:12px;font-variant-numeric:tabular-nums}
+.kpis div b{display:block;font-size:1.3rem}
+.kpis div span{color:var(--muted);font-size:.82rem}
+footer{margin-top:22px;color:var(--muted);font-size:.8rem}
+@media (max-width:820px){.mesero,.board{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<h1>Picada <span>Don Lucho</span></h1>
+<p class="sub">Sistema de pedidos · Lota</p>
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-v="garzon" aria-selected="true">Garzón</button>
+  <button class="tab" role="tab" data-v="cocina" aria-selected="false">Cocina <b id="nCoc">0</b></button>
+  <button class="tab" role="tab" data-v="caja" aria-selected="false">Caja</button>
+</div>
+
+<section id="garzon" class="mesero">
+  <div class="box">
+    <h2>1. Elige la mesa</h2>
+    <div class="mesas" id="mesas"></div>
+    <h2>2. Agrega platos</h2>
+    <div class="menu" id="menu"></div>
+  </div>
+  <div class="box">
+    <h2 id="tMesa">Comanda</h2>
+    <ul class="lines" id="lines"></ul>
+    <input id="nota" placeholder="Nota para cocina (ej. sin cebolla)">
+    <button class="primary" id="enviar" disabled>Enviar a cocina</button>
+    <p class="msg" id="msg" role="status"></p>
+  </div>
+</section>
+
+<section id="cocina" class="board" hidden>
+  <div class="col"><h2>Pendientes <span id="c0"></span></h2><div id="k0"></div></div>
+  <div class="col"><h2>En preparación <span id="c1"></span></h2><div id="k1"></div></div>
+  <div class="col"><h2>Listos para servir <span id="c2"></span></h2><div id="k2"></div></div>
+</section>
+
+<section id="caja" hidden>
+  <div class="kpis"><div><b id="vDia"></b><span>Vendido hoy</span></div><div><b id="mAb"></b><span>Mesas abiertas</span></div></div>
+  <div class="caja" id="cuentas"></div>
+</section>
+<footer>Picada Don Lucho es un negocio ficticio. Demo con datos de ejemplo · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+const MENU=[['Cazuela de vacuno',7900],['Pastel de choclo',8500],['Chorrillana para 2',12900],['Empanada de pino',2900],['Completo italiano',3200],['Porotos con riendas',6900],['Bebida 500 ml',1800],['Mote con huesillo',2500]];
+const clp=n=>'$'+n.toLocaleString('es-CL');
+let mesa=1,draft=[],seq=40,vendido=186400;
+let tickets=[{id:38,mesa:3,items:['Cazuela de vacuno','Bebida 500 ml'],nota:'',st:1,t:'13:12'},{id:39,mesa:6,items:['Chorrillana para 2','Bebida 500 ml','Bebida 500 ml'],nota:'Papas bien doradas',st:0,t:'13:20'}];
+let cuentas={3:['Cazuela de vacuno','Bebida 500 ml','Empanada de pino'],6:['Chorrillana para 2','Bebida 500 ml','Bebida 500 ml']};
+const precio=n=>MENU.find(m=>m[0]===n)[1];
+const hora=()=>new Date().toTimeString().slice(0,5);
+function rGarzon(){
+  mesas.innerHTML=[1,2,3,4,5,6,7,8].map(m=>`<button class="mesa ${cuentas[m]?'busy':''}" data-m="${m}" aria-pressed="${m===mesa}">Mesa ${m}</button>`).join('');
+  menu.innerHTML=MENU.map(([n,p],i)=>`<button class="plato" data-i="${i}"><b>${n}</b><span>${clp(p)}</span></button>`).join('');
+  tMesa.textContent=`Comanda · Mesa ${mesa}`;
+  lines.innerHTML=draft.map((n,i)=>`<li><span>${n}</span><span>${clp(precio(n))} <button data-x="${i}" aria-label="Quitar">✕</button></span></li>`).join('')||'<li class="empty">Toca un plato para agregarlo.</li>';
+  enviar.disabled=!draft.length;
+}
+function rCocina(){
+  [0,1,2].forEach(s=>{const l=tickets.filter(t=>t.st===s);document.getElementById('c'+s).textContent=l.length;
+    document.getElementById('k'+s).innerHTML=l.map(t=>`<div class="ticket ${['','prep','done'][s]}"><header>Mesa ${t.mesa}<span>#${t.id} · ${t.t}</span></header><ul>${t.items.map(i=>`<li>${i}</li>`).join('')}</ul>${t.nota?`<em>${t.nota}</em>`:''}<button class="adv" data-t="${t.id}">${['Empezar','Marcar listo','Servido'][s]}</button></div>`).join('')||'<p class="empty">Nada por aquí.</p>'});
+  nCoc.textContent=tickets.filter(t=>t.st<2).length;
+}
+function rCaja(){
+  const ms=Object.keys(cuentas);vDia.textContent=clp(vendido);mAb.textContent=ms.length;
+  cuentas_.innerHTML=ms.map(m=>{const sub=cuentas[m].reduce((a,n)=>a+precio(n),0),pr=Math.round(sub*.1/100)*100;
+    return `<div class="box cuenta"><h2>Mesa ${m}</h2><div class="sum">${cuentas[m].map(n=>`<span>${n}</span><span>${clp(precio(n))}</span>`).join('')}<span>Propina sugerida 10%</span><span>${clp(pr)}</span><span class="tot">Total</span><span class="tot">${clp(sub+pr)}</span></div><button class="primary" data-c="${m}">Cerrar cuenta</button></div>`}).join('')||'<p class="empty">No hay mesas abiertas.</p>';
+}
+const cuentas_=document.getElementById('cuentas');
+function all(){rGarzon();rCocina();rCaja()}
+mesas.onclick=e=>{const b=e.target.closest('[data-m]');if(b){mesa=+b.dataset.m;msg.textContent='';rGarzon()}};
+menu.onclick=e=>{const b=e.target.closest('[data-i]');if(b){draft.push(MENU[b.dataset.i][0]);rGarzon()}};
+lines.onclick=e=>{const b=e.target.closest('[data-x]');if(b){draft.splice(+b.dataset.x,1);rGarzon()}};
+enviar.onclick=()=>{tickets.push({id:seq++,mesa,items:[...draft],nota:nota.value.trim(),st:0,t:hora()});cuentas[mesa]=(cuentas[mesa]||[]).concat(draft);
+  msg.textContent=`Comanda de la mesa ${mesa} enviada a cocina.`;draft=[];nota.value='';all()};
+document.getElementById('cocina').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const t=tickets.find(x=>x.id==b.dataset.t);if(t.st<2)t.st++;else tickets=tickets.filter(x=>x!==t);all()};
+cuentas_.onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;const m=b.dataset.c;vendido+=cuentas[m].reduce((a,n)=>a+precio(n),0);delete cuentas[m];all()};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>{x.setAttribute('aria-selected',x===t);document.getElementById(x.dataset.v).hidden=x!==t})});
+all();
+</script>
+
+</body>
+</html>

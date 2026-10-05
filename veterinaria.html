@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Veterinaria Patitas Sur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Mulish:wght@400;600;700&display=swap">
+<style>
+/* Layout: formulario de ingreso en tarjeta central con barra de pasos, validación en línea y resumen final */
+:root{
+  --bg:#EEF3F6; --surface:#FFFFFF; --ink:#1A2A33; --muted:#5A6B74; --line:#D3DEE4;
+  --accent:#1F7A8C; --accent-2:#F2A541; --on-accent:#FFFFFF; --err:#B3392F; --ok-bg:#E2F1F3;
+  --display:"Fredoka", "Trebuchet MS", sans-serif;
+  --body:"Mulish", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10181C; --surface:#172228; --ink:#E3ECF0; --muted:#97A8B0; --line:#29373E;
+  --accent:#5DB8C9; --accent-2:#F2B661; --on-accent:#10181C; --err:#F08B7F; --ok-bg:#1A3239; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10181C; --surface:#172228; --ink:#E3ECF0; --muted:#97A8B0; --line:#29373E;
+  --accent:#5DB8C9; --accent-2:#F2B661; --on-accent:#10181C; --err:#F08B7F; --ok-bg:#1A3239; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body);padding-inline:16px}
+.wrap{max-width:620px;margin:0 auto;padding-block:24px 40px}
+h1,h2{font-family:var(--display);font-weight:600;margin:0;line-height:1.15}
+h1{font-size:1.8rem}
+h1 span{color:var(--accent)}
+.sub{color:var(--muted);margin:4px 0 18px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;list-style:none;padding:0}
+.steps li{font-size:.8rem;font-weight:700;color:var(--muted);border-top:4px solid var(--line);padding-top:6px}
+.steps li.on{color:var(--accent);border-color:var(--accent)}
+.steps li.done{color:var(--ink);border-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h2{font-size:1.3rem;margin-bottom:14px}
+.f{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.full{grid-column:1/-1}
+label{display:grid;gap:5px;font-size:.88rem;font-weight:700}
+input,select,textarea{font:400 1rem var(--body);padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:100%}
+textarea{min-height:90px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:none;border-color:var(--accent)}
+.bad input,.bad select,.bad textarea{border-color:var(--err)}
+.err{color:var(--err);font-size:.8rem;font-weight:600;min-height:1em}
+.hint{color:var(--muted);font-size:.8rem;font-weight:400}
+.radios{display:flex;gap:8px;flex-wrap:wrap}
+.radios label{display:flex;align-items:center;gap:6px;font-weight:600;border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+.radios input{width:auto}
+.radios label:has(input:checked){border-color:var(--accent);background:var(--ok-bg)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+.btn{font:700 1rem var(--body);padding:11px 22px;border-radius:999px;cursor:pointer;border:1.5px solid var(--accent)}
+.btn.p{background:var(--accent);color:var(--on-accent)}
+.btn.g{background:transparent;color:var(--accent)}
+.btn:focus-visible{outline:3px solid var(--accent-2);outline-offset:2px}
+dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0}
+dt{color:var(--muted);font-size:.88rem}
+dd{margin:0;font-weight:600;overflow-wrap:anywhere}
+.ticket{text-align:center;padding-block:10px}
+.ticket b{display:block;font-family:var(--display);font-size:2.6rem;color:var(--accent);font-variant-numeric:tabular-nums}
+footer{margin-top:20px;color:var(--muted);font-size:.8rem;text-align:center}
+@media (max-width:480px){.f{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<h1>Veterinaria <span>Patitas Sur</span></h1>
+<p class="sub">Ficha de ingreso · San Pedro de la Paz. Complétala antes de tu hora y te atendemos más rápido.</p>
+<ol class="steps"><li id="s1">1. Tutor</li><li id="s2">2. Mascota</li><li id="s3">3. Motivo</li></ol>
+
+<div class="card">
+  <section data-step="1">
+    <h2>Datos del tutor</h2>
+    <div class="f">
+      <label class="full">Nombre completo<input id="nombre" autocomplete="name"><span class="err"></span></label>
+      <label>RUT <span class="hint">con guion, ej. 12.345.678-5</span><input id="rut" inputmode="text"><span class="err"></span></label>
+      <label>WhatsApp<input id="fono" type="tel" placeholder="+56 9 1234 5678"><span class="err"></span></label>
+      <label class="full">Correo <span class="hint">opcional</span><input id="correo" type="email"><span class="err"></span></label>
+    </div>
+  </section>
+
+  <section data-step="2" hidden>
+    <h2>Datos de la mascota</h2>
+    <div class="f">
+      <label>Nombre<input id="mascota"><span class="err"></span></label>
+      <label>Especie<select id="especie"><option value="">Elige una</option><option>Perro</option><option>Gato</option><option>Conejo</option><option>Otra</option></select><span class="err"></span></label>
+      <label class="full" id="otraWrap" hidden>¿Qué especie?<input id="otra"><span class="err"></span></label>
+      <label>Edad aproximada (años)<input id="edad" type="number" min="0" max="40" step="0.5"><span class="err"></span></label>
+      <label>Peso (kg) <span class="hint">si lo sabes</span><input id="peso" type="number" min="0" step="0.1"><span class="err"></span></label>
+      <div class="full"><label style="margin-bottom:6px">¿Tiene vacunas al día?</label>
+        <div class="radios"><label><input type="radio" name="vac" value="Sí" checked>Sí</label><label><input type="radio" name="vac" value="No">No</label><label><input type="radio" name="vac" value="No sé">No sé</label></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-step="3" hidden>
+    <h2>Motivo de la consulta</h2>
+    <div class="f">
+      <label class="full">Tipo de atención<select id="tipo"><option value="">Elige una</option><option>Control sano</option><option>Vacunación</option><option>Enfermedad o malestar</option><option>Urgencia</option><option>Peluquería</option></select><span class="err"></span></label>
+      <label class="full">Cuéntanos qué pasa<textarea id="motivo" placeholder="Ej.: no ha querido comer desde ayer y está decaído"></textarea><span class="err"></span></label>
+    </div>
+  </section>
+
+  <section data-step="4" hidden>
+    <div class="ticket"><span class="hint">Tu número de atención</span><b id="num"></b></div>
+    <dl id="resumen"></dl>
+    <p class="hint" style="margin-top:14px">Te enviaremos la confirmación por WhatsApp. (Demo: en un sistema real la ficha quedaría guardada para el veterinario.)</p>
+  </section>
+
+  <div class="nav"><button class="btn g" id="atras" type="button" hidden>Atrás</button><span></span><button class="btn p" id="sig" type="button">Continuar</button></div>
+</div>
+<footer>Veterinaria Patitas Sur es un negocio ficticio. Demo de formulario · Desarrollo: <a href="index.html" style="color:inherit">Max, Concepción</a>.</footer>
+</div>
+
+<script>
+let paso=1;
+const $=id=>document.getElementById(id);
+function rutOk(r){r=r.replace(/\./g,'').toUpperCase();const m=r.match(/^(\d{7,8})-([\dK])$/);if(!m)return false;let s=0,f=2;for(let i=m[1].length-1;i>=0;i--){s+=+m[1][i]*f;f=f===7?2:f+1}const d=11-s%11;const dv=d===11?'0':d===10?'K':String(d);return dv===m[2]}
+function fmtRut(r){r=r.replace(/[^\dkK]/g,'').toUpperCase();if(r.length<2)return r;const c=r.slice(0,-1),dv=r.slice(-1);return c.replace(/\B(?=(\d{3})+(?!\d))/g,'.')+'-'+dv}
+$('rut').addEventListener('blur',e=>{e.target.value=fmtRut(e.target.value)});
+$('especie').addEventListener('change',e=>{$('otraWrap').hidden=e.target.value!=='Otra'});
+function setErr(id,msg){const l=$(id).closest('label');l.classList.toggle('bad',!!msg);l.querySelector('.err').textContent=msg||'';return !msg}
+function valida(p){let ok=true;const req=(id,m)=>{ok=setErr(id,$(id).value.trim()?'':m)&&ok};
+  if(p===1){req('nombre','Escribe tu nombre.');
+    ok=setErr('rut',rutOk($('rut').value)?'':'Revisa el RUT: el dígito verificador no coincide.')&&ok;
+    ok=setErr('fono',/^\+?56\s?9[\s\d]{8,10}$/.test($('fono').value.trim())?'':'Usa un celular chileno, ej. +56 9 1234 5678.')&&ok;
+    const c=$('correo').value.trim();ok=setErr('correo',!c||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)?'':'El correo no parece válido.')&&ok}
+  if(p===2){req('mascota','¿Cómo se llama?');req('especie','Elige la especie.');if($('especie').value==='Otra')req('otra','Indica la especie.');
+    const e=$('edad').value;ok=setErr('edad',e!==''&&+e>=0&&+e<=40?'':'Indica una edad entre 0 y 40.')&&ok}
+  if(p===3){req('tipo','Elige el tipo de atención.');ok=setErr('motivo',$('motivo').value.trim().length>=10?'':'Cuéntanos un poco más (mínimo 10 caracteres).')&&ok}
+  if(!ok){const f=document.querySelector(`[data-step="${p}"] .bad input, [data-step="${p}"] .bad select, [data-step="${p}"] .bad textarea`);f&&f.focus()}
+  return ok}
+function show(){document.querySelectorAll('[data-step]').forEach(s=>s.hidden=+s.dataset.step!==paso);
+  [1,2,3].forEach(i=>{$('s'+i).className=i<paso?'done':i===paso?'on':''});
+  $('atras').hidden=paso===1||paso===4;$('sig').textContent=paso===3?'Enviar ficha':paso===4?'Nueva ficha':'Continuar'}
+$('sig').onclick=()=>{
+  if(paso===4){document.querySelectorAll('input:not([type=radio]),select,textarea').forEach(x=>x.value='');$('otraWrap').hidden=true;paso=1;show();return}
+  if(!valida(paso))return;
+  if(paso===3){const esp=$('especie').value==='Otra'?$('otra').value:$('especie').value;
+    $('num').textContent='A-'+String(Math.floor(Math.random()*900)+100);
+    const rows=[['Tutor',$('nombre').value],['RUT',$('rut').value],['WhatsApp',$('fono').value],['Mascota',`${$('mascota').value} (${esp}, ${$('edad').value} años${$('peso').value?', '+$('peso').value+' kg':''})`],['Vacunas al día',document.querySelector('[name=vac]:checked').value],['Atención',$('tipo').value],['Motivo',$('motivo').value]];
+    $('resumen').innerHTML='';rows.forEach(([a,b])=>{const dt=document.createElement('dt');dt.textContent=a;const dd=document.createElement('dd');dd.textContent=b;$('resumen').append(dt,dd)})}
+  paso++;show()};
+$('atras').onclick=()=>{paso--;show()};
+show();
+</script>
+
+</body>
+</html>

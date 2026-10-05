@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Desarrollo web freelance en Concepción, Chile.">
+</head>
+<body>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Max · Desarrollo Web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: columna única con rejilla de plano técnico de fondo; servicios en tarjetas iguales, proceso en pasos reales, contacto al cierre */
+:root{
+  --bg:#F2F5F4; --surface:#FFFFFF; --ink:#13201E; --muted:#56635F;
+  --river:#1D6B73; --signal:#E2643B; --line:#D3DCD9; --grid:rgba(29,107,115,.07);
+  --display:"Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1716; --surface:#16211F; --ink:#E4ECEA; --muted:#93A39F;
+  --river:#5DB3BB; --signal:#F08A64; --line:#26332F; --grid:rgba(93,179,187,.06); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1716; --surface:#16211F; --ink:#E4ECEA; --muted:#93A39F;
+  --river:#5DB3BB; --signal:#F08A64; --line:#26332F; --grid:rgba(93,179,187,.06); color-scheme:dark}
+*{box-sizing:border-box}
+body{
+  background-color:var(--bg);color:var(--ink);font:16px/1.6 var(--body);padding-inline:20px;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.wrap{max-width:960px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;line-height:1.1;text-wrap:balance}
+a{color:var(--river)}
+.mono{font-family:var(--mono);font-size:.8rem;letter-spacing:.04em;color:var(--muted)}
+nav{display:flex;justify-content:space-between;align-items:center;padding-block:22px;gap:12px;flex-wrap:wrap}
+nav b{font-family:var(--display);font-size:1.15rem}
+nav b span{color:var(--signal)}
+nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0;font-size:.93rem}
+nav a{color:var(--ink);text-decoration:none}
+nav a:hover,nav a:focus-visible{color:var(--river)}
+.hero{padding-block:48px 64px}
+.coord{font-family:var(--mono);font-size:.8rem;color:var(--river)}
+.hero h1{font-size:clamp(2.3rem,6.5vw,4.4rem);letter-spacing:-.02em;margin-block:14px 20px;max-width:16ch}
+.hero h1 em{font-style:normal;color:var(--signal)}
+.hero p{max-width:52ch;color:var(--muted);font-size:1.08rem;margin:0 0 28px}
+.btn{display:inline-block;padding:12px 22px;border-radius:4px;font:500 1rem var(--body);text-decoration:none;border:1.5px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.btn:focus-visible{outline:3px solid var(--signal);outline-offset:2px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+section{padding-block:56px;border-top:1px solid var(--line)}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:28px}
+.head h2{font-size:clamp(1.7rem,4vw,2.3rem)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:22px;display:flex;flex-direction:column;gap:10px}
+.card h3{font-size:1.2rem}
+.card p{margin:0;color:var(--muted);font-size:.95rem;flex:1}
+.price{font-family:var(--mono);font-size:.9rem;color:var(--ink);border-top:1px dashed var(--line);padding-top:10px;font-variant-numeric:tabular-nums}
+.price small{color:var(--muted)}
+.work{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.proj{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:16/9;max-width:100%;display:grid;place-items:center;padding:20px;text-align:center}
+.thumb.cafe{background:#2F5D50;color:#F7F6F1;font-family:Georgia,serif;font-size:1.6rem}
+.thumb.barb{background:#1B1F24;color:#E7C27A;font-family:Impact,"Arial Narrow",sans-serif;font-size:1.5rem;letter-spacing:.03em;text-transform:uppercase}
+.thumb.gym{background:#2E6B3F;color:#F1F3F1;font-family:"Arial Narrow",Impact,sans-serif;font-size:1.5rem;text-transform:uppercase;letter-spacing:.02em}
+.thumb.ferr{background:#B5541C;color:#FFF6EE;font-family:var(--display);font-size:1.5rem}
+.thumb.vet{background:#1F7A8C;color:#FFFFFF;font-family:"Trebuchet MS",sans-serif;font-size:1.5rem}
+.thumb.shop{background:#5B3E8A;color:#F5F0FB;font-family:Georgia,serif;font-size:1.5rem}
+.thumb.rest{background:#C0392B;color:#FFF4E6;font-family:Rockwell,Georgia,serif;font-size:1.5rem}
+.thumb.inv{background:#3B4FA8;color:#EEF1FF;font-family:var(--display);font-size:1.5rem}
+.thumb.club{background:#3B4A5A;color:#EEF2F5;font-family:var(--display);font-size:1.25rem}
+.thumb small{display:block;font-family:var(--mono);font-size:.72rem;opacity:.8;margin-top:6px;letter-spacing:.06em}
+.proj div.txt{padding:20px;display:flex;flex-direction:column;gap:8px;flex:1}
+.proj h3{font-size:1.15rem}
+.proj p{margin:0;color:var(--muted);font-size:.95rem;flex:1}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-family:var(--mono);font-size:.72rem;padding:3px 8px;border:1px solid var(--line);border-radius:3px;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.steps li{counter-increment:s;padding-top:14px;border-top:2px solid var(--river)}
+.steps li::before{content:"0" counter(s);font-family:var(--mono);color:var(--river);font-size:.85rem}
+.steps h3{font-size:1.05rem;margin-block:6px 4px}
+.steps p{margin:0;color:var(--muted);font-size:.92rem}
+.contact{background:var(--ink);color:var(--bg);border-radius:8px;padding:32px;display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
+.contact h2{font-size:clamp(1.6rem,4vw,2.2rem)}
+.contact p{margin:8px 0 0;opacity:.8}
+.rows{display:grid;gap:10px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(128,128,128,.35);border-radius:4px;padding:10px 12px;min-width:0}
+.wa{display:inline-block;margin-top:16px;color:var(--signal);font-weight:500}
+.row code{font-family:var(--mono);font-size:.9rem;overflow-wrap:anywhere;user-select:all}
+.row button{font:500 .8rem var(--mono);background:var(--signal);color:#13201E;border:0;border-radius:3px;padding:6px 10px;cursor:pointer;flex-shrink:0}
+.row button:focus-visible{outline:2px solid var(--bg);outline-offset:2px}
+footer{padding-block:28px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (max-width:760px){
+  .cards,.work,.contact{grid-template-columns:1fr}
+  .work{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+}
+@media (max-width:440px){.steps{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+<nav>
+  <b>Max<span>/</span>web</b>
+  <ul><li><a href="#servicios">Servicios</a></li><li><a href="#trabajos">Trabajos</a></li><li><a href="#contacto">Contacto</a></li></ul>
+</nav>
+
+<header class="hero">
+  <div class="coord">36°49′S 73°03′O · Concepción, Chile</div>
+  <h1>Sitios web que le traen <em>clientes</em> a tu negocio</h1>
+  <p>Soy Max, estudiante de Ingeniería Civil en Informática. Hago sitios rápidos, que se ven bien en el celular, y sistemas a medida para pymes y emprendedores del Biobío y de todo Chile.</p>
+  <div class="btns">
+    <a class="btn primary" href="#contacto">Cotizar mi proyecto</a>
+    <a class="btn" href="#trabajos">Ver trabajos</a>
+  </div>
+</header>
+
+<section id="servicios">
+  <div class="head"><h2>Servicios</h2><span class="mono">Precios en CLP · referenciales</span></div>
+  <div class="cards">
+    <article class="card">
+      <h3>Landing page</h3>
+      <p>Una página para presentar tu negocio o promoción, con botón de WhatsApp, mapa y formulario de contacto.</p>
+      <div class="price">desde $120.000 <small>· 1 semana</small></div>
+    </article>
+    <article class="card">
+      <h3>Sitio para negocio</h3>
+      <p>Varias secciones (inicio, servicios, galería, contacto), dominio propio y ayuda con Google Maps.</p>
+      <div class="price">desde $250.000 <small>· 2 semanas</small></div>
+    </article>
+    <article class="card">
+      <h3>Sistema a medida</h3>
+      <p>Reservas, inventario, socios o pagos. Con usuarios, roles y base de datos, pensado para tu forma de trabajar.</p>
+      <div class="price">desde $500.000 <small>· según alcance</small></div>
+    </article>
+  </div>
+</section>
+
+<section id="trabajos">
+  <div class="head"><h2>Trabajos</h2><span class="mono">Demos funcionales · pruébalas</span></div>
+  <div class="work">
+    <article class="proj">
+      <div class="thumb barb"><div>Barbería Nórdica<small>SISTEMA DE RESERVAS · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Reservas online para barbería</h3>
+        <p>El cliente elige servicio, barbero y hora libre. El dueño ve la agenda del día, ingresos estimados y ocupación.</p>
+        <div class="tags"><span>JavaScript</span><span>Agenda</span><span>Panel admin</span></div>
+        <a href="barberia.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb gym"><div>Gimnasio Andes<small>SISTEMA DE COBROS · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Cobro de mensualidades</h3>
+        <p>Estado de pago de cada socio, registro de pagos por medio, meta de recaudación y recordatorios listos para WhatsApp.</p>
+        <div class="tags"><span>JavaScript</span><span>Pagos</span><span>Filtros</span></div>
+        <a href="gimnasio.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb ferr"><div>El Roble<small>INFORMES DE VENTAS · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Informe de ventas para ferretería</h3>
+        <p>Ventas por mes, por categoría y productos estrella, con comparación contra el periodo anterior.</p>
+        <div class="tags"><span>Gráficos</span><span>Reportes</span><span>KPIs</span></div>
+        <a href="ferreteria.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb vet"><div>Patitas Sur<small>FORMULARIO · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Ficha de ingreso para veterinaria</h3>
+        <p>Formulario por pasos con validación de RUT chileno, campos que aparecen según la respuesta y resumen final.</p>
+        <div class="tags"><span>Formularios</span><span>Validación</span><span>UX</span></div>
+        <a href="veterinaria.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb shop"><div>Lanas del Sur<small>TIENDA ONLINE · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Tienda online con carrito</h3>
+        <p>Catálogo por categorías, carrito con cantidades, despacho según comuna, envío gratis sobre un monto y confirmación de pedido.</p>
+        <div class="tags"><span>E-commerce</span><span>Carrito</span><span>Despacho</span></div>
+        <a href="tienda.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb rest"><div>Don Lucho<small>PEDIDOS RESTAURANTE · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Pedidos para restaurante</h3>
+        <p>El garzón toma la comanda por mesa, la cocina la mueve por estados y la caja cierra la cuenta con propina sugerida.</p>
+        <div class="tags"><span>Comandas</span><span>Cocina</span><span>Caja</span></div>
+        <a href="restaurante.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb inv"><div>Pehuén<small>INVENTARIO · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Inventario con alertas de stock</h3>
+        <p>Entradas y salidas de bodega, alertas bajo el mínimo y pedido al proveedor generado de forma automática.</p>
+        <div class="tags"><span>Inventario</span><span>Alertas</span><span>Bodega</span></div>
+        <a href="inventario.html">Probar demo →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb cafe"><div>Café Ribera<small>LANDING PAGE · MUESTRA</small></div></div>
+      <div class="txt">
+        <h3>Landing para cafetería</h3>
+        <p>Carta con precios, horarios y formulario de reserva de mesa. Proyecto de muestra para un negocio ficticio.</p>
+        <div class="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>Modo oscuro</span></div>
+        <a href="cafe.html">Ver sitio →</a>
+      </div>
+    </article>
+    <article class="proj">
+      <div class="thumb club"><div>Club de Montañismo<small>SISTEMA WEB · PROYECTO DE TÍTULO</small></div></div>
+      <div class="txt">
+        <h3>Sistema de gestión para club de montaña</h3>
+        <p>Socios, cuotas con comprobantes de pago, ficha médica, inventario y préstamo de equipos, con permisos por rol y revisión de seguridad.</p>
+        <div class="tags"><span>PHP</span><span>PostgreSQL</span><span>Linux</span><span>Roles</span></div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="head"><h2>Cómo trabajo</h2></div>
+  <ol class="steps">
+    <li><h3>Conversamos</h3><p>Me cuentas tu negocio y qué necesitas. Gratis y sin compromiso.</p></li>
+    <li><h3>Cotización</h3><p>Precio cerrado y plazo por escrito. 50% para partir.</p></li>
+    <li><h3>Desarrollo</h3><p>Te muestro avances para que opines antes de terminar.</p></li>
+    <li><h3>Entrega</h3><p>Lo publicamos y te enseño a usarlo. 30 días de soporte incluidos.</p></li>
+  </ol>
+</section>
+
+<section id="contacto">
+  <div class="contact">
+    <div>
+      <h2>¿Tienes un proyecto en mente?</h2>
+      <p>Escríbeme y te respondo en menos de 24 horas.</p>
+      <a class="wa" href="https://wa.me/56937221271?text=Hola%20Max%2C%20quiero%20cotizar%20un%20sitio%20web">Escribir por WhatsApp →</a>
+    </div>
+    <div class="rows">
+      <div class="row"><code id="c1">+56 9 3722 1271</code><button type="button" data-copy="c1">Copiar</button></div>
+      <div class="row"><code id="c2">askenmusica@gmail.com</code><button type="button" data-copy="c2">Copiar</button></div>
+    </div>
+  </div>
+</section>
+
+<footer class="mono"><span>© 2026 Max · Concepción</span><span>Hecho a mano, sin plantillas</span></footer>
+</div>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+  const el=document.getElementById(b.dataset.copy),txt=el.textContent;
+  const done=()=>{b.textContent='Copiado';setTimeout(()=>b.textContent='Copiar',1600)};
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r)};
+  try{navigator.clipboard.writeText(txt).then(done,sel)}catch(e){sel()}
+}));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sala Resonancia · Demo</title>
+<meta name="description" content="Demo de reservas online para salas de ensayo y estudios de grabación. Desarrollo: Max, Concepción.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Reserva por bloques de sala; el panel muestra la grilla de salas x horas, que es como piensa el dueño */
+:root{
+  --bg:#F3F1EC; --surface:#FFFFFF; --ink:#151413; --muted:#615C55; --line:#DAD5CC;
+  --amp:#D9480F; --amp-ink:#FFFFFF; --taken:#E7E3DB; --ok:#2B7A4B;
+  --display:"Space Grotesk", system-ui, sans-serif; --body:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121110; --surface:#1C1A18; --ink:#EEEAE3; --muted:#A39D94; --line:#2E2B27;
+  --amp:#FF7A3D; --amp-ink:#121110; --taken:#27241F; --ok:#5CC48A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121110; --surface:#1C1A18; --ink:#EEEAE3; --muted:#A39D94; --line:#2E2B27;
+  --amp:#FF7A3D; --amp-ink:#121110; --taken:#27241F; --ok:#5CC48A; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:820px;margin:0 auto;padding-block:20px 40px}
+.aviso{background:var(--surface);border:1px dashed var(--line);color:var(--muted);font-size:.85rem;padding:10px 14px;border-radius:6px;margin-bottom:18px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.05;letter-spacing:-.01em}
+h1{font-size:clamp(2.2rem,8vw,3.4rem)}
+h1 i{font-style:normal;color:var(--amp)}
+.sub{color:var(--muted);font-size:.95rem;margin-top:6px}
+.meter{display:flex;gap:3px;align-items:flex-end;height:38px}
+.meter span{width:6px;background:var(--amp);border-radius:2px;opacity:.85}
+.tabs{display:flex;gap:4px;margin-block:20px 14px;flex-wrap:wrap}
+.tab{font:600 .95rem var(--body);padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--amp);outline-offset:2px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:12px}
+.step h2{font-size:1.25rem;margin-bottom:12px;display:flex;gap:10px;align-items:baseline}
+.step h2 small{font:600 .75rem var(--body);color:var(--amp);letter-spacing:.1em;white-space:nowrap}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.opt{text-align:left;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer}
+.opt b{display:block;font-weight:600}
+.opt span{display:block;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.opt[aria-pressed="true"]{border-color:var(--amp);box-shadow:inset 0 0 0 1px var(--amp)}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.day{flex:0 0 auto;font:inherit;padding:8px 12px;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;text-align:center;min-width:64px}
+.day b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.day span{font-size:.75rem;color:var(--muted);text-transform:uppercase}
+.day[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.day[aria-pressed="true"] span{color:var(--bg)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.slot{font:500 .92rem var(--body);padding:9px 0;border:1.5px solid var(--line);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.slot:disabled{background:var(--taken);color:var(--muted);text-decoration:line-through;cursor:not-allowed;border-color:transparent}
+.slot[aria-pressed="true"]{background:var(--amp);color:var(--amp-ink);border-color:var(--amp)}
+.extras{display:grid;gap:8px}
+.extras label{display:flex;gap:10px;align-items:center;font-size:.95rem;cursor:pointer}
+.extras input{width:18px;height:18px;accent-color:var(--amp)}
+.extras small{color:var(--muted);font-variant-numeric:tabular-nums}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.fields label{display:grid;gap:4px;font-size:.85rem;font-weight:500;min-width:0}
+.fields input{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:100%}
+.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:var(--bg);border-radius:8px;padding:16px 18px}
+.summary p{margin:0;min-width:0}
+.summary b{font-family:var(--display);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.cta{font:600 1rem var(--body);background:var(--amp);color:var(--amp-ink);border:0;border-radius:999px;padding:12px 22px;cursor:pointer}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.msg{margin-top:12px;padding:14px;border-left:4px solid var(--amp);background:var(--surface);border-radius:4px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px}
+.kpi b{display:block;font-family:var(--display);font-size:2rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:.82rem;color:var(--muted)}
+.grid{overflow-x:auto}
+.grid table{border-collapse:separate;border-spacing:4px;width:100%;min-width:520px}
+.grid th{font:600 .75rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left;padding:4px}
+.grid td{background:var(--taken);border-radius:5px;padding:8px;font-size:.82rem;height:52px;vertical-align:top}
+.grid td.b{background:var(--amp);color:var(--amp-ink)}
+.grid td.b.new{outline:2px solid var(--ink);outline-offset:-2px}
+.grid td small{display:block;opacity:.85}
+.hint{color:var(--muted);font-size:.85rem;margin:0 0 10px}
+footer{margin-top:24px;color:var(--muted);font-size:.8rem}
+@media (max-width:560px){.fields{grid-template-columns:1fr}.kpi{padding:10px}.kpi b{font-size:1.6rem}.kpi span{font-size:.72rem;display:block;line-height:1.25}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="aviso" role="note">Demo de portafolio con datos de ejemplo. "Sala Resonancia" es un negocio ficticio. Desarrollo: Max, Concepción.</div>
+<header>
+  <div><h1>Sala <i>Resonancia</i></h1><div class="sub">Salas de ensayo y grabación · Reserva tu bloque en 1 minuto</div></div>
+  <div class="meter" aria-hidden="true"><span style="height:40%"></span><span style="height:75%"></span><span style="height:55%"></span><span style="height:95%"></span><span style="height:65%"></span><span style="height:30%"></span><span style="height:80%"></span></div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="t-0" aria-selected="true">Reservar</button>
+  <button class="tab" role="tab" id="t-1" aria-selected="false">Panel de la sala</button>
+</div>
+
+<main id="v-0">
+  <div class="step"><h2><small>PASO 1</small>Sala</h2><div class="opts" id="salas"></div></div>
+  <div class="step"><h2><small>PASO 2</small>Día y bloque</h2><div class="days" id="dias"></div><div class="slots" id="bloques"></div></div>
+  <div class="step"><h2><small>PASO 3</small>Extras</h2><div class="extras" id="extras"></div></div>
+  <div class="step"><h2><small>PASO 4</small>Tu banda</h2>
+    <div class="fields">
+      <label>Banda o proyecto<input id="banda" placeholder="Los Penquistas"></label>
+      <label>Contacto<input id="nom" placeholder="Camila Soto"></label>
+      <label>WhatsApp<input id="tel" type="tel" placeholder="+56 9 1234 5678"></label>
+    </div>
+  </div>
+  <div class="summary"><p id="resumen">Elige sala y bloque.</p><button class="cta" id="confirmar" disabled>Reservar</button></div>
+  <div class="msg" id="ok" hidden role="status"></div>
+</main>
+
+<section id="v-1" hidden>
+  <div class="kpis">
+    <div class="kpi"><b id="k1">0</b><span>Bloques reservados hoy</span></div>
+    <div class="kpi"><b id="k2">$0</b><span>Ingreso del día</span></div>
+    <div class="kpi"><b id="k3">0%</b><span>Ocupación</span></div>
+  </div>
+  <div class="step"><h2>Grilla de hoy</h2>
+    <p class="hint">Cada celda es un bloque de 2 horas. Las reservas nuevas aparecen al tiro, sin anotar nada en un cuaderno.</p>
+    <div class="grid"><table><thead id="gh"></thead><tbody id="gb"></tbody></table></div>
+  </div>
+</section>
+
+<footer>Demo de portafolio · Desarrollo: Max · +56 9 3722 1271 · askenmusica@gmail.com · askenmusica-eng.github.io</footer>
+</div>
+
+<script>
+const SALAS=[{n:'Sala A',d:'Grande · batería, 2 amps guitarra, bajo, PA',p:12000},{n:'Sala B',d:'Mediana · ideal tríos y acústico',p:9000},{n:'Estudio',d:'Grabación con ingeniero',p:25000}];
+const BLOQ=['10:00','12:00','14:00','16:00','18:00','20:00'];
+const EXTRA=[{n:'Grabación del ensayo (multipista)',p:8000},{n:'Platillos de la sala',p:2000},{n:'Pedal doble',p:1000}];
+const DN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+n.toLocaleString('es-CL');
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dias=[];for(let i=0;i<7;i++){const x=new Date();x.setDate(x.getDate()+i);dias.push(x)}
+const hoy=iso(dias[0]);
+const bandas=['Niebla Sur','Los Penquistas','Marea Roja','Trío Andes','Pulso','Vértigo','Cerro Verde','Antena'];
+let seed=11;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+let res=[];dias.forEach(d=>SALAS.forEach((s,si)=>BLOQ.forEach(b=>{if(rnd()<(si===2?.25:.45))res.push({dia:iso(d),sala:si,b,banda:bandas[Math.floor(rnd()*8)],total:s.p+(rnd()<.3?8000:0)})})));
+const st={sala:null,dia:hoy,b:null,ex:[]};
+const ahora=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const ocupado=(dia,si,b)=>(dia===hoy&&b<=ahora())||res.some(r=>r.dia===dia&&r.sala===si&&r.b===b);
+const fin=b=>String(+b.slice(0,2)+2).padStart(2,'0')+':00';
+const total=()=>st.sala==null?0:SALAS[st.sala].p+st.ex.reduce((s,i)=>s+EXTRA[i].p,0);
+
+function render(){
+  const S=$('salas');S.innerHTML='';
+  SALAS.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.setAttribute('aria-pressed',st.sala===i);b.innerHTML=`<b>${s.n}</b><span>${s.d}</span><span>${fmt(s.p)} el bloque de 2 h</span>`;b.onclick=()=>{st.sala=i;st.b=null;render()};S.appendChild(b)});
+  const D=$('dias');D.innerHTML='';
+  dias.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='day';b.setAttribute('aria-pressed',st.dia===iso(d));b.innerHTML=`<span>${iso(d)===hoy?'Hoy':DN[d.getDay()]}</span><b>${d.getDate()}</b>`;b.onclick=()=>{st.dia=iso(d);st.b=null;render()};D.appendChild(b)});
+  const B=$('bloques');B.innerHTML='';
+  BLOQ.forEach(h=>{const b=document.createElement('button');b.type='button';b.className='slot';b.textContent=`${h}–${fin(h)}`;b.disabled=st.sala==null||ocupado(st.dia,st.sala,h);b.setAttribute('aria-pressed',st.b===h);b.onclick=()=>{st.b=h;render()};B.appendChild(b)});
+  const ok=st.sala!=null&&st.b;
+  $('resumen').innerHTML=ok?`${SALAS[st.sala].n} · ${st.dia.split('-').reverse().slice(0,2).join('/')} · ${st.b}–${fin(st.b)}<br><b>${fmt(total())}</b>`:(st.sala==null?'Elige sala y bloque.':'Elige un bloque libre.');
+  $('confirmar').disabled=!ok;
+  panel();
+}
+function extras(){const E=$('extras');E.innerHTML='';EXTRA.forEach((x,i)=>{const l=document.createElement('label');const c=document.createElement('input');c.type='checkbox';c.onchange=()=>{st.ex=c.checked?[...st.ex,i]:st.ex.filter(k=>k!==i);render()};l.append(c,document.createTextNode(x.n+' '));const s=document.createElement('small');s.textContent='+'+fmt(x.p);l.appendChild(s);E.appendChild(l)})}
+
+$('confirmar').onclick=()=>{
+  const banda=$('banda').value.trim(),n=$('nom').value.trim(),t=$('tel').value.trim(),m=$('ok');m.hidden=false;
+  if(!banda||!n||!t){m.textContent='Completa banda, contacto y WhatsApp para reservar.';return}
+  res.push({dia:st.dia,sala:st.sala,b:st.b,banda,total:total(),nueva:true});
+  m.textContent=`¡Listo, ${banda}! ${SALAS[st.sala].n} reservada el ${st.dia.split('-').reverse().slice(0,2).join('/')} de ${st.b} a ${fin(st.b)} (${fmt(total())}). Te llegará la confirmación por WhatsApp. Mira el Panel de la sala para verla en la grilla.`;
+  st.b=null;['banda','nom','tel'].forEach(id=>$(id).value='');render();
+};
+
+function panel(){
+  const r=res.filter(x=>x.dia===hoy);
+  $('k1').textContent=r.length;$('k2').textContent=fmt(r.reduce((s,x)=>s+x.total,0));
+  $('k3').textContent=Math.round(r.length/(SALAS.length*BLOQ.length)*100)+'%';
+  $('gh').innerHTML='<tr><th>Bloque</th>'+SALAS.map(s=>`<th>${s.n}</th>`).join('')+'</tr>';
+  const G=$('gb');G.innerHTML='';
+  BLOQ.forEach(h=>{const tr=document.createElement('tr');const th=document.createElement('th');th.textContent=h;tr.appendChild(th);
+    SALAS.forEach((s,si)=>{const td=document.createElement('td');const x=r.find(y=>y.sala===si&&y.b===h);
+      if(x){td.className='b'+(x.nueva?' new':'');td.textContent=x.banda;const sm=document.createElement('small');sm.textContent=fmt(x.total);td.appendChild(sm)}else td.textContent='Libre';
+      tr.appendChild(td)});G.appendChild(tr)});
+}
+function tab(i){[0,1].forEach(k=>{$('t-'+k).setAttribute('aria-selected',k===i);$('v-'+k).hidden=k!==i})}
+[0,1].forEach(k=>$('t-'+k).onclick=()=>tab(k));
+extras();render();
+</script>
+</body>
+</html>

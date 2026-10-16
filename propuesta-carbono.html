@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propuesta Automotriz Carbono</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Maqueta de agenda online de servicios para Automotriz Carbono, preparada por Max.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Agenda de taller: el cliente agenda con los mismos datos que hoy pide el bot de WhatsApp; el taller ve la agenda y el estado de cada auto */
+:root{
+  --bg:#EDEFF1; --surface:#FFFFFF; --ink:#16191D; --muted:#5B636D; --line:#D3D8DE;
+  --volt:#1F6FEB; --volt-ink:#FFFFFF; --taken:#E2E5E9; --ok:#1E7F4F; --warn:#B26A00;
+  --display:"Barlow Condensed", "Arial Narrow", sans-serif;
+  --body:"Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1114; --surface:#181B20; --ink:#E8EBEF; --muted:#98A1AC; --line:#2A2F36;
+  --volt:#4C8DFF; --volt-ink:#0F1114; --taken:#22262C; --ok:#45B97C; --warn:#E3A13B; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1114; --surface:#181B20; --ink:#E8EBEF; --muted:#98A1AC; --line:#2A2F36;
+  --volt:#4C8DFF; --volt-ink:#0F1114; --taken:#22262C; --ok:#45B97C; --warn:#E3A13B; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px}
+.wrap{max-width:780px;margin:0 auto;padding-block:20px 40px}
+.aviso{background:var(--ink);color:var(--bg);font-size:.85rem;padding:10px 14px;border-radius:6px;margin-bottom:18px}
+header{border-left:6px solid var(--volt);padding:4px 0 4px 14px}
+h1,h2{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1}
+h1{font-size:clamp(2.3rem,9vw,3.6rem)}
+h1 span{color:var(--volt)}
+.sub{color:var(--muted);font-size:.95rem;margin-top:6px}
+.tabs{display:flex;gap:4px;margin-block:20px 14px;flex-wrap:wrap}
+.tab{font:600 .95rem var(--body);padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:4px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--volt);outline-offset:2px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;margin-bottom:12px}
+.step h2{font-size:1.35rem;margin-bottom:12px;display:flex;gap:10px;align-items:baseline}
+.step h2 small{white-space:nowrap;font:600 .8rem var(--body);color:var(--volt);letter-spacing:.08em}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.opt{text-align:left;font:inherit;padding:12px;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer}
+.opt b{display:block;font-weight:600}
+.opt span{color:var(--muted);font-size:.85rem}
+.opt[aria-pressed="true"]{border-color:var(--volt);box-shadow:inset 0 0 0 1px var(--volt)}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+label{display:grid;gap:4px;font-size:.85rem;font-weight:500;min-width:0}
+input,select{font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);width:100%}
+.patente{text-transform:uppercase;letter-spacing:.12em;font-weight:600}
+.days{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.day{flex:0 0 auto;font:inherit;padding:8px 12px;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer;text-align:center;min-width:64px}
+.day b{display:block;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.day span{font-size:.75rem;color:var(--muted);text-transform:uppercase}
+.day[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.day[aria-pressed="true"] span{color:var(--bg)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px}
+.slot{font:500 .95rem var(--body);padding:9px 0;border:1.5px solid var(--line);border-radius:5px;background:transparent;color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.slot:disabled{background:var(--taken);color:var(--muted);text-decoration:line-through;cursor:not-allowed;border-color:transparent}
+.slot[aria-pressed="true"]{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px}
+.summary p{margin:0;min-width:0}
+.cta{font:600 1rem var(--body);background:var(--volt);color:var(--volt-ink);border:0;border-radius:4px;padding:12px 20px;cursor:pointer}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.msg{margin-top:12px;padding:14px;border-left:4px solid var(--volt);background:var(--surface);border-radius:4px}
+.wa{margin-top:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px 10px 10px 2px;padding:12px 14px;font-size:.92rem;white-space:pre-line;max-width:420px}
+.wa-h{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:12px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:middle}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+td .pat{font-weight:600;letter-spacing:.08em}
+.tw{overflow-x:auto}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px}
+.kpi b{display:block;font-family:var(--display);font-size:2.1rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi span{font-size:.82rem;color:var(--muted)}
+.est{font:600 .78rem var(--body);padding:4px 10px;border-radius:999px;border:1.5px solid currentColor;background:transparent;cursor:pointer;white-space:nowrap}
+.est.e0{color:var(--muted)} .est.e1{color:var(--warn)} .est.e2{color:var(--volt)} .est.e3{color:var(--ok)}
+.hint{color:var(--muted);font-size:.85rem;margin:0 0 10px}
+.status-card{display:grid;gap:10px}
+.track{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.track div{font-size:.8rem;text-align:center;padding:8px 4px;border-radius:4px;background:var(--taken);color:var(--muted)}
+.track div.on{background:var(--volt);color:var(--volt-ink);font-weight:600}
+.lookup{display:flex;gap:8px;flex-wrap:wrap}
+.lookup input{flex:1 1 180px;width:auto}
+footer{margin-top:24px;color:var(--muted);font-size:.8rem}
+@media (max-width:560px){.fields{grid-template-columns:1fr 1fr}.kpi{padding:10px}.kpi b{font-size:1.7rem}.kpi span{font-size:.72rem;display:block;line-height:1.25}.track{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="aviso" role="note">Maqueta de propuesta preparada por Max (desarrollador web, Concepción) para Automotriz Carbono. No es el sitio oficial: servicios, horarios y datos son de ejemplo y se ajustan a los reales.</div>
+
+<header>
+  <h1>Automotriz <span>Carbono</span></h1>
+  <div class="sub">Joaquín Prieto 741 · Concepción · Electricidad y mantenimiento · Agenda tu hora en 1 minuto</div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" id="t-0" aria-selected="true">Agendar servicio</button>
+  <button class="tab" role="tab" id="t-1" aria-selected="false">Estado de mi auto</button>
+  <button class="tab" role="tab" id="t-2" aria-selected="false">Panel del taller</button>
+</div>
+
+<main id="v-0">
+  <div class="step"><h2><small>PASO 1</small>Servicio</h2><div class="opts" id="servicios"></div></div>
+  <div class="step"><h2><small>PASO 2</small>Tu vehículo</h2>
+    <div class="fields">
+      <label>Marca<input id="marca" placeholder="Toyota" autocomplete="off"></label>
+      <label>Modelo<input id="modelo" placeholder="Yaris" autocomplete="off"></label>
+      <label>Año<input id="anio" inputmode="numeric" placeholder="2018" maxlength="4"></label>
+      <label>Km aproximado<input id="km" inputmode="numeric" placeholder="85.000"></label>
+      <label>Patente<input id="pat" class="patente" placeholder="ABCD12" maxlength="6" autocomplete="off"></label>
+      <label>Comentario<input id="com" placeholder="Ruido al frenar…"></label>
+    </div>
+  </div>
+  <div class="step"><h2><small>PASO 3</small>Día y hora de ingreso</h2><div class="days" id="dias"></div><div class="slots" id="horas"></div></div>
+  <div class="step"><h2><small>PASO 4</small>Tus datos</h2>
+    <div class="fields">
+      <label>Nombre<input id="nom" placeholder="Rodrigo Muñoz"></label>
+      <label>WhatsApp<input id="tel" type="tel" placeholder="+56 9 1234 5678"></label>
+    </div>
+  </div>
+  <div class="summary"><p id="resumen">Elige servicio y hora, y completa los datos del vehículo.</p><button class="cta" id="confirmar" disabled>Agendar</button></div>
+  <div class="msg" id="ok" hidden role="status"></div>
+</main>
+
+<section id="v-1" hidden>
+  <div class="step status-card">
+    <h2>¿Cómo va mi auto?</h2>
+    <p class="hint">El cliente escribe su patente y ve en qué etapa está, sin tener que llamar ni escribir al taller.</p>
+    <div class="lookup"><input id="q" class="patente" placeholder="Patente, ej: KJTR45" maxlength="6"><button class="cta" id="buscar">Consultar</button></div>
+    <div id="res" role="status"></div>
+  </div>
+</section>
+
+<section id="v-2" hidden>
+  <div class="kpis">
+    <div class="kpi"><b id="k1">0</b><span>Ingresos agendados hoy</span></div>
+    <div class="kpi"><b id="k2">0</b><span>Autos en el taller</span></div>
+    <div class="kpi"><b id="k3">0</b><span>Listos para retiro</span></div>
+  </div>
+  <div class="step"><h2>Agenda de hoy</h2>
+    <p class="hint">Toca el estado para avanzarlo: Agendado → En diagnóstico → En reparación → Listo. El cliente lo ve al consultar su patente.</p>
+    <div class="tw"><table><thead><tr><th>Hora</th><th>Patente</th><th>Vehículo</th><th>Servicio</th><th>Cliente</th><th>Estado</th></tr></thead><tbody id="agenda"></tbody></table></div>
+  </div>
+</section>
+
+<footer>Maqueta de demostración con datos de ejemplo · Desarrollo: Max · +56 9 3722 1271 · askenmusica@gmail.com · askenmusica-eng.github.io</footer>
+</div>
+
+<script>
+const SERV=[
+  {n:'Mantención por kilometraje',d:'Aceite, filtros y revisión general'},
+  {n:'Diagnóstico con scanner',d:'Luz de check engine y fallas'},
+  {n:'Electricidad automotriz',d:'Batería, alternador, luces'},
+  {n:'Frenos',d:'Pastillas, discos y líquido'},
+  {n:'Revisión pre-compra',d:'Antes de comprar un usado'},
+  {n:'Otro / no sé qué tiene',d:'Lo revisamos y cotizamos'}];
+const HORAS=['08:30','09:30','10:30','11:30','14:30','15:30','16:30'];
+const ESTADOS=['Agendado','En diagnóstico','En reparación','Listo para retiro'];
+const DN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const dias=[];for(let i=0;dias.length<6&&i<10;i++){const x=new Date();x.setDate(x.getDate()+i);if(x.getDay()!==0)dias.push(x)}
+const hoy=iso(dias[0]);
+const ej=[
+  ['KJTR45','Toyota Yaris 2017',0,'Rodrigo M.',3],['HXPL22','Chevrolet Sail 2016',1,'Carolina F.',2],
+  ['LBVS81','Hyundai Accent 2019',2,'Jorge P.',1],['GZKD30','Nissan V16 2010',3,'Patricia L.',0],
+  ['PFRW67','Suzuki Swift 2021',0,'Matías C.',0]];
+let citas=ej.map((e,i)=>({dia:hoy,hora:HORAS[i],pat:e[0],veh:e[1],serv:SERV[e[2]].n,cli:e[3],est:e[4],ej:true}));
+const st={serv:null,dia:hoy,hora:null};
+const $=id=>document.getElementById(id);
+const ahora=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const ocupado=(dia,h)=>(dia===hoy&&h<=ahora())||citas.filter(c=>c.dia===dia&&c.hora===h).length>=2;
+
+function render(){
+  const S=$('servicios');S.innerHTML='';
+  SERV.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='opt';b.setAttribute('aria-pressed',st.serv===i);b.innerHTML=`<b>${s.n}</b><span>${s.d}</span>`;b.onclick=()=>{st.serv=i;render()};S.appendChild(b)});
+  const D=$('dias');D.innerHTML='';
+  dias.forEach(d=>{const b=document.createElement('button');b.type='button';b.className='day';b.setAttribute('aria-pressed',st.dia===iso(d));b.innerHTML=`<span>${iso(d)===hoy?'Hoy':DN[d.getDay()]}</span><b>${d.getDate()}</b>`;b.onclick=()=>{st.dia=iso(d);st.hora=null;render()};D.appendChild(b)});
+  const H=$('horas');H.innerHTML='';
+  const sab=new Date(st.dia+'T12:00').getDay()===6;
+  HORAS.filter(h=>!sab||h<'13:00').forEach(h=>{const b=document.createElement('button');b.type='button';b.className='slot';b.textContent=h;b.disabled=ocupado(st.dia,h);b.setAttribute('aria-pressed',st.hora===h);b.onclick=()=>{st.hora=h;render()};H.appendChild(b)});
+  check();panel();
+}
+function check(){
+  const veh=$('marca').value.trim()&&$('modelo').value.trim()&&$('pat').value.trim().length>=5;
+  const ok=st.serv!=null&&st.hora&&veh;
+  $('resumen').textContent=st.serv!=null&&st.hora?`${SERV[st.serv].n} · ${st.dia.split('-').reverse().slice(0,2).join('/')} a las ${st.hora}`+(veh?` · ${$('marca').value.trim()} ${$('modelo').value.trim()}`:' · faltan datos del vehículo'):'Elige servicio y hora, y completa los datos del vehículo.';
+  $('confirmar').disabled=!ok;
+}
+['marca','modelo','pat','anio'].forEach(id=>$(id).addEventListener('input',check));
+$('pat').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''));
+$('q').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,''));
+
+$('confirmar').onclick=()=>{
+  const n=$('nom').value.trim(),t=$('tel').value.trim(),m=$('ok');m.hidden=false;
+  if(!n||!t){m.textContent='Escribe tu nombre y WhatsApp para agendar.';return}
+  const v=`${$('marca').value.trim()} ${$('modelo').value.trim()}${$('anio').value?' '+$('anio').value:''}`;
+  const c={dia:st.dia,hora:st.hora,pat:$('pat').value,veh:v,serv:SERV[st.serv].n,cli:n,est:0};
+  citas.push(c);
+  const f=st.dia.split('-').reverse().slice(0,2).join('/');
+  m.innerHTML='';
+  const p=document.createElement('p');p.style.margin='0';p.textContent=`¡Listo, ${n}! Tu hora quedó agendada para el ${f} a las ${st.hora}. Puedes ver el avance con tu patente en "Estado de mi auto".`;
+  const h=document.createElement('div');h.className='wa-h';h.textContent='Así le llega el aviso al WhatsApp del taller';
+  const w=document.createElement('div');w.className='wa';
+  w.textContent=`Nueva hora agendada\n${f} · ${st.hora}\n${c.serv}\n${v} · Patente ${c.pat}${$('km').value?' · '+$('km').value+' km':''}${$('com').value?'\nComentario: '+$('com').value:''}\nCliente: ${n} · ${t}`;
+  m.append(p,h,w);
+  st.hora=null;['nom','tel','marca','modelo','anio','km','pat','com'].forEach(id=>$(id).value='');render();
+};
+
+function panel(){
+  const r=citas.filter(c=>c.dia===hoy).sort((a,b)=>a.hora.localeCompare(b.hora));
+  $('k1').textContent=r.length;
+  $('k2').textContent=citas.filter(c=>c.est===1||c.est===2).length;
+  $('k3').textContent=citas.filter(c=>c.est===3).length;
+  const T=$('agenda');T.innerHTML='';
+  if(!r.length){T.innerHTML='<tr><td colspan="6">Sin ingresos para hoy.</td></tr>';return}
+  r.forEach(c=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${c.hora}</td><td><span class="pat"></span></td><td></td><td></td><td></td><td></td>`;
+    tr.children[1].firstChild.textContent=c.pat;tr.children[2].textContent=c.veh;tr.children[3].textContent=c.serv;tr.children[4].textContent=c.cli;
+    const b=document.createElement('button');b.type='button';b.className='est e'+c.est;b.textContent=ESTADOS[c.est];b.title='Avanzar estado';
+    b.onclick=()=>{c.est=(c.est+1)%4;panel()};tr.children[5].appendChild(b);T.appendChild(tr)});
+}
+
+$('buscar').onclick=()=>{
+  const q=$('q').value.trim(),R=$('res');R.innerHTML='';
+  const c=[...citas].reverse().find(x=>x.pat===q);
+  if(!c){R.textContent=q?'No encontramos esa patente. Prueba con KJTR45 o LBVS81 (datos de ejemplo).':'Escribe una patente.';return}
+  const p=document.createElement('p');p.style.margin='8px 0 0';p.textContent=`${c.veh} · ${c.serv} · Estado: ${ESTADOS[c.est]}`;
+  const tk=document.createElement('div');tk.className='track';
+  ESTADOS.forEach((e,i)=>{const d=document.createElement('div');d.textContent=e;if(i<=c.est)d.className='on';tk.appendChild(d)});
+  R.append(p,tk);
+  if(c.est===3){const z=document.createElement('p');z.style.margin='6px 0 0';z.textContent='Tu auto está listo. Puedes pasar a retirarlo en Joaquín Prieto 741.';R.appendChild(z)}
+};
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter')$('buscar').click()});
+
+function tab(i){[0,1,2].forEach(k=>{$('t-'+k).setAttribute('aria-selected',k===i);$('v-'+k).hidden=k!==i});if(i===2)panel()}
+[0,1,2].forEach(k=>$('t-'+k).onclick=()=>tab(k));
+render();
+</script>
+</body>
+</html>
